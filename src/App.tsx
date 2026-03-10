@@ -1,8 +1,9 @@
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/layout/Navbar'
 import Dashboard from './pages/Dashboard'
-import Balances from './pages/Balances'
-import Trade from './pages/Trade'
+import Operations from './pages/Operations'
+import Debtors from './pages/Debtors'
+import Settings from './pages/Settings'
 
 function App() {
   return (
@@ -11,8 +12,9 @@ function App() {
       <main className="max-w-[1320px] mx-auto">
         <Routes>
           <Route path="/"         element={<Dashboard />} />
-        <Route path="/balances" element={<Balances />}  />
-        <Route path="/trade"    element={<Trade />}     />
+        <Route path="/operations"  element={<Operations />}  />
+        <Route path="/debtors"     element={<Debtors />}     />
+        <Route path="/settings"    element={<Settings />}    />
         </Routes>
       </main>
     </div>

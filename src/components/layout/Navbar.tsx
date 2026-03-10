@@ -1,13 +1,10 @@
 import { NavLink } from 'react-router-dom'
-import { Bell } from 'lucide-react'
+import { Settings } from 'lucide-react'
 
 const navLinks = [
-  { label: 'Dashboard',  to: '/' },
-  { label: 'Balances',   to: '/balances' },
-  { label: 'Trade',      to: '/trade' },
-  { label: 'Analytics',  to: '/analytics' },
-  { label: 'History',    to: '/history' },
-  { label: 'Settings',   to: '/settings' },
+  { label: 'Dashboard',   to: '/' },
+  { label: 'Operaciones', to: '/operations' },
+  { label: 'Deudores',    to: '/debtors' },
 ]
 
 export default function Navbar() {
@@ -40,19 +37,17 @@ export default function Navbar() {
         ))}
       </ul>
 
-      {/* Actions */}
-      <div className="flex items-center gap-3">
-        <button className="relative p-1.5 rounded-full hover:bg-gray-100 cursor-pointer">
-          <Bell size={18} className="text-gray-600" />
-        </button>
-        <div className="w-8 h-8 rounded-full bg-gray-300 overflow-hidden">
-          <img
-            src="https://i.pravatar.cc/32"
-            alt="avatar"
-            className="w-full h-full object-cover"
-          />
-        </div>
-      </div>
+      {/* Settings icon */}
+      <NavLink
+        to="/settings"
+        className={({ isActive }) =>
+          `p-1.5 rounded-full transition-colors cursor-pointer ${
+            isActive ? 'text-blue-600 bg-blue-50' : 'text-gray-500 hover:bg-gray-100'
+          }`
+        }
+      >
+        <Settings size={19} />
+      </NavLink>
     </nav>
   )
 }
