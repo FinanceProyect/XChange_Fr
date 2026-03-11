@@ -4,10 +4,18 @@ import OperationsFilters from '../components/operations/OperationsFilters'
 import OperationsTable from '../components/operations/OperationsTable'
 import AddOperationModal from '../components/operations/AddOperationModal'
 import Toast from '../components/ui/Toast'
+import type { OperationCurrency, OperationType } from '../data/mockData'
 
 export default function Operations() {
   const [showModal, setShowModal] = useState(false)
   const [showToast, setShowToast] = useState(false)
+  const [currency, setCurrency] = useState<OperationCurrency | ''>('')
+  const [type, setType] = useState<OperationType | ''>('')
+
+  const handleReset = () => {
+    setCurrency('')
+    setType('')
+  }
 
   const handleSave = () => {
     setShowToast(true)
@@ -31,9 +39,15 @@ export default function Operations() {
       </div>
 
       <div className="mb-4">
-        <OperationsFilters />
+        <OperationsFilters
+          currency={currency}
+          type={type}
+          onCurrencyChange={setCurrency}
+          onTypeChange={setType}
+          onReset={handleReset}
+        />
       </div>
-      <OperationsTable />
+      <OperationsTable currency={currency} type={type} />
 
       {showModal && (
         <AddOperationModal
