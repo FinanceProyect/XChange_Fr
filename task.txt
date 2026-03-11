@@ -1,0 +1,136 @@
+You are modifying the **Operaciones page** of an existing React + TypeScript project.
+
+The goal is to simplify the filtering system and make the existing filters fully functional.
+
+Do NOT modify unrelated parts of the project.
+
+---
+
+1. REMOVE UNUSED FILTER FEATURES
+
+Remove the following elements completely from the Operaciones page:
+
+* The **Filter button**
+* The **Export button**
+* The **date filtering functionality**
+
+This includes removing:
+
+* UI elements
+* related logic
+* unused state
+* unused handlers
+
+---
+
+2. ENABLE CURRENCY FILTER
+
+The **currency filter already exists in the UI**.
+
+Make it fully functional.
+
+Behavior:
+
+When a currency is selected (example: EUR, USD, etc.), the table should show only operations with that currency.
+
+---
+
+3. ENABLE BUY / SELL FILTER
+
+The **Compra / Venta filter already exists in the UI**.
+
+Make it functional.
+
+Behavior:
+
+* If "Compra" is selected → show only purchase operations.
+* If "Venta" is selected → show only sales operations.
+
+---
+
+4. COMBINED FILTERING
+
+Both filters must work **together**.
+
+Example behavior:
+
+If the user selects:
+
+Compra
+AND
+EUR
+
+The table should display:
+
+All operations that are:
+
+* type = compra
+* currency = EUR
+
+Filtering must apply both conditions simultaneously.
+
+---
+
+5. RESET FILTER BUTTON
+
+Add a **Reset Filters button**.
+
+Behavior:
+
+* The button should appear disabled (visually inactive) when no filters are active.
+* The button should become active (visually enabled) when at least one filter is selected.
+
+Example:
+
+No filters selected → button disabled
+Currency selected → button enabled
+Type selected → button enabled
+
+---
+
+6. RESET FILTER ACTION
+
+When the **Reset Filters button** is clicked:
+
+* Clear all filters
+* Reset currency filter
+* Reset compra/venta filter
+* Show all operations again
+
+---
+
+7. UX REQUIREMENTS
+
+The reset button should visually communicate its state:
+
+Disabled state:
+
+* lower opacity
+* not clickable
+
+Enabled state:
+
+* normal opacity
+* clickable
+
+---
+
+GENERAL RULES
+
+* Maintain the current UI design
+* Do not introduce new libraries
+* Reuse existing components if possible
+* Keep the code clean and readable
+* Avoid unnecessary complexity
+
+---
+
+FINAL RESULT
+
+The Operaciones page should:
+
+* Remove export, filter, and date filter features
+* Allow filtering by currency
+* Allow filtering by compra/venta
+* Allow combining both filters
+* Include a reset filters button that activates only when filters are used
