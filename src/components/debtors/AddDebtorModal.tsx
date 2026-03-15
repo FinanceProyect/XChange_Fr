@@ -27,7 +27,7 @@ export default function AddDebtorModal({ onClose, onSave }: AddDebtorModalProps)
   const handleSave = () => {
     if (!isValid) return
     createDeudor(
-      { nombre: form.nombre, documento: form.documento },
+      { nombre: form.nombre, documento: form.documento, importe: parseFloat(form.importe) },
       {
         onSuccess: () => {
           onSave()

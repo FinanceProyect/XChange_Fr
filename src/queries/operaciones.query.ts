@@ -26,12 +26,60 @@ export const useOperacion = (id: string) => {
 const invalidateDashboard = (queryClient: ReturnType<typeof useQueryClient>) =>
   queryClient.invalidateQueries({ queryKey: ["dashboard", "stats"] })
 
+interface DashboardStatsCache {
+  currencyBalances?: Array<{
+    currency: string
+    amount: number
+    [key: string]: unknown
+  }>
+  [key: string]: unknown
+}
+
+interface OperacionPayload {
+  tipo?: string
+  activoId?: string
+  monto?: number
+}
+
+const updateDashboardBalancesCache = (
+  queryClient: ReturnType<typeof useQueryClient>,
+  payload?: OperacionPayload,
+) => {
+  if (!payload?.activoId || typeof payload.monto !== "number" || Number.isNaN(payload.monto)) {
+    return
+  }
+
+  const normalizedType = payload.tipo?.toUpperCase()
+  const delta = normalizedType === "VENTA" ? -payload.monto : payload.monto
+
+  queryClient.setQueryData<DashboardStatsCache | undefined>(
+    ["dashboard", "stats"],
+    (prev) => {
+      if (!prev?.currencyBalances) return prev
+
+      let didUpdate = false
+      const currencyBalances = prev.currencyBalances.map((balance) => {
+        if (balance.currency !== payload.activoId) return balance
+
+        didUpdate = true
+        const currentAmount = typeof balance.amount === "number" ? balance.amount : Number(balance.amount ?? 0)
+        const nextAmount = Math.max(currentAmount + delta, 0)
+        return { ...balance, amount: nextAmount }
+      })
+
+      if (!didUpdate) return prev
+      return { ...prev, currencyBalances }
+    },
+  )
+}
+
 export const useCreateOperacion = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (data: unknown) => create(data),
-    onSuccess: () => {
+    onSuccess: (_result, variables) => {
+      updateDashboardBalancesCache(queryClient, variables as OperacionPayload)
       queryClient.invalidateQueries({ queryKey: ["operaciones"] })
       invalidateDashboard(queryClient)
     },

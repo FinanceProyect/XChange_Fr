@@ -1,26 +1,12 @@
-import type { Debtor, DebtorStatus } from '../data/mockData'
+import type { Debtor } from '../data/mockData'
 
-// Shapes devueltas por el backend
+// Shape devuelta por el backend en /deudores
 export interface BackendDeudor {
   id: string
   nombre: string
   documento: string
-  deuda?: BackendDeuda | null
-}
-
-export interface BackendDeuda {
-  id: string
-  montoPendiente: number
-  fechaVencimiento: string
-  estadoActual: 'VIGENTE' | 'MORA' | 'SALDADO' | 'CERRADO'
-  deudorId: string
-}
-
-const estadoMap: Record<BackendDeuda['estadoActual'], DebtorStatus> = {
-  VIGENTE: 'Pending',
-  MORA:    'Overdue',
-  SALDADO: 'Paid',
-  CERRADO: 'Paid',
+  fecha: string
+  importe: number | null
 }
 
 function buildAvatar(nombre: string): string {
@@ -31,16 +17,14 @@ function buildAvatar(nombre: string): string {
     .join('')
 }
 
-export function deudorToFrontend(
-  deudor: BackendDeudor,
-  deuda?: BackendDeuda,
-): Debtor {
+export function deudorToFrontend(deudor: BackendDeudor): Debtor {
   return {
     id:     deudor.id,
     name:   deudor.nombre,
     avatar: buildAvatar(deudor.nombre),
-    date:   deuda?.fechaVencimiento ?? '',
-    amount: deuda ? `$${deuda.montoPendiente.toFixed(2)}` : '',
-    status: deuda ? estadoMap[deuda.estadoActual] : 'Pending',
+    document: deudor.documento,
+    date:   deudor.fecha,
+    amount: deudor.importe === null || deudor.importe === undefined ? '' : String(deudor.importe),
+    status: 'Pending',
   }
 }

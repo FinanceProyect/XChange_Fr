@@ -58,15 +58,16 @@ export interface Debtor {
   date: string
   name: string
   avatar: string
+  document?: string
   amount: string
   status: DebtorStatus
 }
 
 export const debtorsData: Debtor[] = [
-  { id: '1', date: '2024-03-15', name: 'John Smith',    avatar: 'JS', amount: '$2,500.00', status: 'Overdue' },
-  { id: '2', date: '2024-03-12', name: 'Sarah Johnson', avatar: 'SJ', amount: '$1,850.00', status: 'Pending' },
-  { id: '3', date: '2024-03-10', name: 'Michael Brown', avatar: 'MB', amount: '$3,200.00', status: 'Paid'    },
-  { id: '4', date: '2024-03-08', name: 'Emma Wilson',   avatar: 'EW', amount: '$900.00',   status: 'Pending' },
+  { id: '1', date: '2024-03-15', name: 'John Smith',    avatar: 'JS', document: 'DNI 28.123.456', amount: '$2,500.00', status: 'Overdue' },
+  { id: '2', date: '2024-03-12', name: 'Sarah Johnson', avatar: 'SJ', document: 'ID 9923',       amount: '$1,850.00', status: 'Pending' },
+  { id: '3', date: '2024-03-10', name: 'Michael Brown', avatar: 'MB', document: 'PASS 7351',     amount: '$3,200.00', status: 'Paid'    },
+  { id: '4', date: '2024-03-08', name: 'Emma Wilson',   avatar: 'EW', document: 'DNI 34.987.120', amount: '$900.00',   status: 'Pending' },
 ]
 
 // ── Balances ────────────────────────────────────────────────

@@ -58,7 +58,6 @@ export default function OperationsTable({ currency, type }: OperationsTableProps
           <table className="w-full text-sm">
             <thead>
               <tr className="text-xs text-gray-400 uppercase border-b border-gray-100">
-                <th className="text-left py-2 font-medium">#</th>
                 <th className="text-left py-2 font-medium">Fecha</th>
                 <th className="text-left py-2 font-medium">Moneda</th>
                 <th className="text-left py-2 font-medium">Tipo</th>
@@ -75,7 +74,6 @@ export default function OperationsTable({ currency, type }: OperationsTableProps
 
                 return (
                   <tr key={op.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td className="py-3 text-gray-400 text-xs">{op.id}</td>
                     <td className="py-3 text-gray-600">{op.date}</td>
                     <td className="py-3">
                       <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${currencyColors[op.currency]}`}>
