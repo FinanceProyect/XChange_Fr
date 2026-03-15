@@ -1,9 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   create,
+  extenderFecha,
   getAll,
   getById,
   remove,
+  saldar,
   update,
 } from "../services/deudores.service"
 
@@ -50,6 +52,29 @@ export const useDeleteDeudor = () => {
 
   return useMutation({
     mutationFn: (id: string) => remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["deudores"] })
+    },
+  })
+}
+
+export const useSaldarDeudor = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id: string) => saldar(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["deudores"] })
+    },
+  })
+}
+
+export const useExtenderFecha = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ id, nuevaFecha }: { id: string; nuevaFecha: string }) =>
+      extenderFecha(id, nuevaFecha),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["deudores"] })
     },

@@ -3,7 +3,20 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer,
 } from 'recharts'
-import { portfolioSeriesData } from '../../data/mockData'
+
+interface PortfolioSeries {
+  day: string
+  EUR: number
+  USD: number
+  BRL: number
+  USDT: number
+}
+
+interface CurrencyBalance {
+  currency: string
+  symbol: string
+  amount: number
+}
 
 const currencies = [
   { key: 'EUR',  label: '€ EUR',  color: '#3b82f6' },
@@ -12,10 +25,40 @@ const currencies = [
   { key: 'USDT', label: '₮ USDT', color: '#a855f7' },
 ]
 
-export default function PortfolioChart() {
+interface PortfolioChartProps {
+  portfolioSeries?: PortfolioSeries[]
+  balances: CurrencyBalance[]
+}
+
+export default function PortfolioChart({ portfolioSeries, balances }: PortfolioChartProps) {
   const [active, setActive] = useState<Set<string>>(
     new Set(currencies.map((c) => c.key))
   )
+
+  // Deduplica por día: si hay varias entradas para la misma fecha, se queda
+  // con la última (el valor más reciente de ese día)
+  const dedupedSeries: PortfolioSeries[] = portfolioSeries?.length
+    ? Object.values(
+        portfolioSeries.reduce<Record<string, PortfolioSeries>>((acc, point) => {
+          acc[point.day] = point
+          return acc
+        }, {}),
+      )
+    : []
+
+  // Si el backend devuelve la serie histórica la usamos; si no, construimos
+  // un único punto "Hoy" a partir de los saldos actuales de los cards
+  const chartData: PortfolioSeries[] = dedupedSeries.length
+    ? dedupedSeries
+    : balances.length
+      ? [{
+          day:  'Hoy',
+          EUR:  balances.find((b) => b.currency === 'EUR')?.amount  ?? 0,
+          USD:  balances.find((b) => b.currency === 'USD')?.amount  ?? 0,
+          BRL:  balances.find((b) => b.currency === 'BRL')?.amount  ?? 0,
+          USDT: balances.find((b) => b.currency === 'USDT')?.amount ?? 0,
+        }]
+      : []
 
   const toggle = (key: string) => {
     setActive((prev) => {
@@ -74,7 +117,7 @@ export default function PortfolioChart() {
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={portfolioSeriesData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+        <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
           <XAxis dataKey="day" tick={{ fontSize: 10 }} tickLine={false} />
           <YAxis
@@ -104,7 +147,7 @@ export default function PortfolioChart() {
                 dataKey={c.key}
                 stroke={c.color}
                 strokeWidth={2}
-                dot={false}
+                dot={{ r: 4 }}
                 activeDot={{ r: 5 }}
                 name={c.key}
               />

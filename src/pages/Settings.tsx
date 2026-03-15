@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Wallet, Globe, PiggyBank, LogOut, Save } from 'lucide-react'
 import { currencyBalances } from '../data/mockData'
+import { useConfiguracion, useSaveConfiguracion } from '../queries/configuracion.query'
 
 const currencyLabels: Record<string, string> = {
   EUR:  'Euros (EUR)',
@@ -9,7 +10,19 @@ const currencyLabels: Record<string, string> = {
   USDT: 'Tether (USDT)',
 }
 
+const currencySymbols: Record<string, string> = {
+  EUR: '€', USD: '$', BRL: 'R$', USDT: '₮',
+}
+
 export default function Settings() {
+  const { data } = useConfiguracion()
+  const { mutate: saveConfig, isPending } = useSaveConfiguracion()
+
+  const backendData = data as {
+    saldoEur: number; saldoUsd: number; saldoBrl: number; saldoUsdt: number
+    carteraDefecto: string; monedaDefecto: string; idioma: string
+  } | undefined
+
   const [defaultCurrency, setDefaultCurrency] = useState('EUR')
   const [defaultWallet, setDefaultWallet]     = useState('Trading Account')
   const [language, setLanguage]               = useState('es')
@@ -17,8 +30,34 @@ export default function Settings() {
     Object.fromEntries(currencyBalances.map((b) => [b.currency, b.amount.toString()]))
   )
 
+  // Sync state when backend data loads
+  useEffect(() => {
+    if (!backendData) return
+    setDefaultCurrency(backendData.monedaDefecto)
+    setDefaultWallet(backendData.carteraDefecto)
+    setLanguage(backendData.idioma)
+    setBalances({
+      EUR:  backendData.saldoEur.toString(),
+      USD:  backendData.saldoUsd.toString(),
+      BRL:  backendData.saldoBrl.toString(),
+      USDT: backendData.saldoUsdt.toString(),
+    })
+  }, [backendData])
+
   const handleBalance = (id: string, value: string) =>
     setBalances((prev) => ({ ...prev, [id]: value }))
+
+  const handleSave = () => {
+    saveConfig({
+      saldoEur:       parseFloat(balances.EUR  || '0'),
+      saldoUsd:       parseFloat(balances.USD  || '0'),
+      saldoBrl:       parseFloat(balances.BRL  || '0'),
+      saldoUsdt:      parseFloat(balances.USDT || '0'),
+      carteraDefecto: defaultWallet,
+      monedaDefecto:  defaultCurrency,
+      idioma:         language,
+    })
+  }
 
   return (
     <div className="bg-gray-50 px-5 py-5 lg:px-8 lg:py-6">
@@ -30,9 +69,13 @@ export default function Settings() {
           <p className="text-xs lg:text-sm text-gray-500 mt-1">Ajusta las preferencias de tu cuenta</p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer">
+          <button
+            onClick={handleSave}
+            disabled={isPending}
+            className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <Save size={14} />
-            Guardar cambios
+            {isPending ? 'Guardando...' : 'Guardar cambios'}
           </button>
           <button className="flex items-center gap-1.5 px-4 py-2 border border-red-200 text-red-500 hover:bg-red-50 text-sm font-semibold rounded-lg transition-colors cursor-pointer">
             <LogOut size={14} />
@@ -51,18 +94,18 @@ export default function Settings() {
             <h2 className="text-sm font-semibold text-gray-800">Saldo disponible</h2>
           </div>
           <div className="flex flex-col gap-3">
-            {currencyBalances.map(({ currency, symbol }) => (
+            {currencyBalances.map(({ currency }) => (
               <div key={currency}>
                 <label className="text-xs text-gray-500 mb-1 block">{currencyLabels[currency]}</label>
                 <div className="flex items-center border border-gray-200 rounded-md overflow-hidden focus-within:ring-1 focus-within:ring-blue-500">
                   <span className="px-3 py-2 text-sm text-gray-400 bg-gray-50 border-r border-gray-200 min-w-[40px] text-center">
-                    {symbol}
+                    {currencySymbols[currency]}
                   </span>
                   <input
                     type="number"
                     min="0"
                     step="0.01"
-                    value={balances[currency]}
+                    value={balances[currency] ?? ''}
                     onChange={(e) => handleBalance(currency, e.target.value)}
                     className="flex-1 px-3 py-2 text-sm text-gray-700 focus:outline-none"
                   />

@@ -54,7 +54,7 @@ export const monthlyTrendsData = [
 export type DebtorStatus = 'Overdue' | 'Pending' | 'Paid'
 
 export interface Debtor {
-  id: number
+  id: string
   date: string
   name: string
   avatar: string
@@ -63,10 +63,10 @@ export interface Debtor {
 }
 
 export const debtorsData: Debtor[] = [
-  { id: 1, date: '2024-03-15', name: 'John Smith',    avatar: 'JS', amount: '$2,500.00', status: 'Overdue' },
-  { id: 2, date: '2024-03-12', name: 'Sarah Johnson', avatar: 'SJ', amount: '$1,850.00', status: 'Pending' },
-  { id: 3, date: '2024-03-10', name: 'Michael Brown', avatar: 'MB', amount: '$3,200.00', status: 'Paid'    },
-  { id: 4, date: '2024-03-08', name: 'Emma Wilson',   avatar: 'EW', amount: '$900.00',   status: 'Pending' },
+  { id: '1', date: '2024-03-15', name: 'John Smith',    avatar: 'JS', amount: '$2,500.00', status: 'Overdue' },
+  { id: '2', date: '2024-03-12', name: 'Sarah Johnson', avatar: 'SJ', amount: '$1,850.00', status: 'Pending' },
+  { id: '3', date: '2024-03-10', name: 'Michael Brown', avatar: 'MB', amount: '$3,200.00', status: 'Paid'    },
+  { id: '4', date: '2024-03-08', name: 'Emma Wilson',   avatar: 'EW', amount: '$900.00',   status: 'Pending' },
 ]
 
 // ── Balances ────────────────────────────────────────────────
@@ -211,7 +211,7 @@ export type OperationCurrency = 'EUR' | 'USD' | 'BRL' | 'USDT'
 export type OperationType = 'Compra' | 'Venta'
 
 export interface Operation {
-  id: number
+  id: string
   date: string
   currency: OperationCurrency
   type: OperationType
@@ -221,14 +221,14 @@ export interface Operation {
 }
 
 export const operationsData: Operation[] = [
-  { id: 1,  date: '2024-03-15', currency: 'USD',  type: 'Compra', amount: 1000,  buyPrice: 0.92,  sellPrice: 0.94  },
-  { id: 2,  date: '2024-03-15', currency: 'EUR',  type: 'Venta',  amount: 500,   buyPrice: 1.08,  sellPrice: 1.10  },
-  { id: 3,  date: '2024-03-14', currency: 'BRL',  type: 'Compra', amount: 3000,  buyPrice: 0.18,  sellPrice: 0.19  },
-  { id: 4,  date: '2024-03-14', currency: 'USDT', type: 'Venta',  amount: 750,   buyPrice: 0.91,  sellPrice: 0.93  },
-  { id: 5,  date: '2024-03-13', currency: 'USD',  type: 'Venta',  amount: 2000,  buyPrice: 0.91,  sellPrice: 0.93  },
-  { id: 6,  date: '2024-03-13', currency: 'EUR',  type: 'Compra', amount: 1200,  buyPrice: 1.07,  sellPrice: 1.09  },
-  { id: 7,  date: '2024-03-12', currency: 'BRL',  type: 'Venta',  amount: 5000,  buyPrice: 0.17,  sellPrice: 0.18  },
-  { id: 8,  date: '2024-03-12', currency: 'USDT', type: 'Compra', amount: 400,   buyPrice: 0.90,  sellPrice: 0.92  },
-  { id: 9,  date: '2024-03-11', currency: 'USD',  type: 'Compra', amount: 1500,  buyPrice: 0.92,  sellPrice: 0.94  },
-  { id: 10, date: '2024-03-10', currency: 'EUR',  type: 'Venta',  amount: 800,   buyPrice: 1.08,  sellPrice: 1.11  },
+  { id: '1',  date: '2024-03-15', currency: 'USD',  type: 'Compra', amount: 1000,  buyPrice: 0.92,  sellPrice: 0.94  },
+  { id: '2',  date: '2024-03-15', currency: 'EUR',  type: 'Venta',  amount: 500,   buyPrice: 1.08,  sellPrice: 1.10  },
+  { id: '3',  date: '2024-03-14', currency: 'BRL',  type: 'Compra', amount: 3000,  buyPrice: 0.18,  sellPrice: 0.19  },
+  { id: '4',  date: '2024-03-14', currency: 'USDT', type: 'Venta',  amount: 750,   buyPrice: 0.91,  sellPrice: 0.93  },
+  { id: '5',  date: '2024-03-13', currency: 'USD',  type: 'Venta',  amount: 2000,  buyPrice: 0.91,  sellPrice: 0.93  },
+  { id: '6',  date: '2024-03-13', currency: 'EUR',  type: 'Compra', amount: 1200,  buyPrice: 1.07,  sellPrice: 1.09  },
+  { id: '7',  date: '2024-03-12', currency: 'BRL',  type: 'Venta',  amount: 5000,  buyPrice: 0.17,  sellPrice: 0.18  },
+  { id: '8',  date: '2024-03-12', currency: 'USDT', type: 'Compra', amount: 400,   buyPrice: 0.90,  sellPrice: 0.92  },
+  { id: '9',  date: '2024-03-11', currency: 'USD',  type: 'Compra', amount: 1500,  buyPrice: 0.92,  sellPrice: 0.94  },
+  { id: '10', date: '2024-03-10', currency: 'EUR',  type: 'Venta',  amount: 800,   buyPrice: 1.08,  sellPrice: 1.11  },
 ]

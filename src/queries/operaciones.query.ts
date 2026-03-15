@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   create,
+  generarDeuda,
   getAll,
   getById,
   remove,
@@ -22,6 +23,9 @@ export const useOperacion = (id: string) => {
   })
 }
 
+const invalidateDashboard = (queryClient: ReturnType<typeof useQueryClient>) =>
+  queryClient.invalidateQueries({ queryKey: ["dashboard", "stats"] })
+
 export const useCreateOperacion = () => {
   const queryClient = useQueryClient()
 
@@ -29,6 +33,7 @@ export const useCreateOperacion = () => {
     mutationFn: (data: unknown) => create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["operaciones"] })
+      invalidateDashboard(queryClient)
     },
   })
 }
@@ -41,6 +46,7 @@ export const useUpdateOperacion = () => {
       update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["operaciones"] })
+      invalidateDashboard(queryClient)
     },
   })
 }
@@ -52,6 +58,14 @@ export const useDeleteOperacion = () => {
     mutationFn: (id: string) => remove(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["operaciones"] })
+      invalidateDashboard(queryClient)
     },
+  })
+}
+
+export const useGenerarDeuda = () => {
+  return useMutation({
+    mutationFn: ({ operacionId, deudorId }: { operacionId: string; deudorId: string }) =>
+      generarDeuda(operacionId, deudorId),
   })
 }

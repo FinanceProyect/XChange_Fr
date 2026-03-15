@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, ArrowDownLeft } from 'lucide-react'
-import { operationsData } from '../../data/mockData'
-import type { OperationCurrency } from '../../data/mockData'
+import type { OperationCurrency, Operation } from '../../data/mockData'
+import { operacionToFrontend, type BackendOperacion } from '../../adapters/operaciones.adapter'
 
 const currencySymbol: Record<OperationCurrency, string> = {
   EUR:  '€',
@@ -19,8 +19,12 @@ const currencyColors: Record<OperationCurrency, string> = {
 
 const RECENT_LIMIT = 6
 
-export default function RecentOperations() {
-  const recent = operationsData.slice(0, RECENT_LIMIT)
+interface RecentOperationsProps {
+  operations?: BackendOperacion[]
+}
+
+export default function RecentOperations({ operations }: RecentOperationsProps) {
+  const recent: Operation[] = (operations ?? []).slice(0, RECENT_LIMIT).map(operacionToFrontend)
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5 flex flex-col h-full">
@@ -35,6 +39,11 @@ export default function RecentOperations() {
       </div>
 
       <div className="flex flex-col gap-1 flex-1">
+        {recent.length === 0 && (
+          <div className="flex items-center justify-center flex-1 py-8">
+            <p className="text-sm text-gray-400">No hay operaciones registradas</p>
+          </div>
+        )}
         {recent.map((op) => {
           const sym    = currencySymbol[op.currency]
           const profit = ((op.sellPrice - op.buyPrice) * op.amount).toFixed(2)

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
 import type { OperationType, OperationCurrency } from '../../data/mockData'
+import { useCreateOperacion } from '../../queries/operaciones.query'
 
 interface FormState {
   currency: OperationCurrency | ''
@@ -18,6 +19,7 @@ interface AddOperationModalProps {
 
 export default function AddOperationModal({ onClose, onSave }: AddOperationModalProps) {
   const [form, setForm] = useState<FormState>(EMPTY)
+  const { mutate: createOperacion, isPending } = useCreateOperacion()
 
   const isValid =
     form.currency !== '' &&
@@ -30,8 +32,20 @@ export default function AddOperationModal({ onClose, onSave }: AddOperationModal
 
   const handleSave = () => {
     if (!isValid) return
-    onSave()
-    onClose()
+    createOperacion(
+      {
+        tipo:       form.type === 'Compra' ? 'COMPRA' : 'VENTA',
+        activoId:   form.currency,
+        monto:      parseFloat(form.amount),
+        tasaCambio: parseFloat(form.cotizacion),
+      },
+      {
+        onSuccess: () => {
+          onSave()
+          onClose()
+        },
+      },
+    )
   }
 
   return (
@@ -123,9 +137,9 @@ export default function AddOperationModal({ onClose, onSave }: AddOperationModal
           </button>
           <button
             onClick={handleSave}
-            disabled={!isValid}
+            disabled={!isValid || isPending}
             className={`flex-1 py-2 rounded-lg text-sm font-semibold text-white transition-colors ${
-              isValid
+              isValid && !isPending
                 ? 'bg-blue-600 hover:bg-blue-700 cursor-pointer'
                 : 'bg-blue-200 cursor-not-allowed'
             }`}
