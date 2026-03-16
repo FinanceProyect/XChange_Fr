@@ -23,8 +23,10 @@ export const useOperacion = (id: string) => {
   })
 }
 
-const invalidateDashboard = (queryClient: ReturnType<typeof useQueryClient>) =>
+const invalidateDashboard = (queryClient: ReturnType<typeof useQueryClient>) => {
   queryClient.invalidateQueries({ queryKey: ["dashboard", "stats"] })
+  queryClient.invalidateQueries({ queryKey: ["dashboard", "balances"] })
+}
 
 interface DashboardStatsCache {
   currencyBalances?: Array<{

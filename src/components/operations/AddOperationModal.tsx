@@ -147,7 +147,9 @@ export default function AddOperationModal({
             <label className="text-xs text-gray-500 mb-1 block">Moneda</label>
             <select
               value={form.currency}
-              onChange={(e) => set("currency", e.target.value)}
+              onChange={(e) =>
+                set("currency", e.target.value as OperationCurrency)
+              }
               className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="">Seleccionar moneda</option>
