@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
+import { useCreateDeudor } from '../../queries/deudores.query'
 
 interface FormState {
   nombre: string
+  documento: string
   importe: string
 }
 
-const EMPTY: FormState = { nombre: '', importe: '' }
+const EMPTY: FormState = { nombre: '', documento: '', importe: '' }
 
 interface AddDebtorModalProps {
   onClose: () => void
@@ -15,17 +17,24 @@ interface AddDebtorModalProps {
 
 export default function AddDebtorModal({ onClose, onSave }: AddDebtorModalProps) {
   const [form, setForm] = useState<FormState>(EMPTY)
+  const { mutate: createDeudor, isPending } = useCreateDeudor()
 
-  const isValid = form.nombre.trim() !== '' && form.importe !== ''
+  const isValid = form.nombre.trim() !== '' && form.documento.trim() !== '' && form.importe !== ''
 
   const set = (field: keyof FormState, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }))
 
   const handleSave = () => {
     if (!isValid) return
-    void new Date() // exact datetime at moment of saving — TODO: pass to backend
-    onSave()
-    onClose()
+    createDeudor(
+      { nombre: form.nombre, documento: form.documento, importe: parseFloat(form.importe) },
+      {
+        onSuccess: () => {
+          onSave()
+          onClose()
+        },
+      },
+    )
   }
 
   return (
@@ -50,6 +59,18 @@ export default function AddDebtorModal({ onClose, onSave }: AddDebtorModalProps)
               placeholder="Nombre completo"
               value={form.nombre}
               onChange={(e) => set('nombre', e.target.value)}
+              className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Documento */}
+          <div>
+            <label className="text-xs text-gray-500 mb-1 block">Documento</label>
+            <input
+              type="text"
+              placeholder="DNI / NIE / Pasaporte"
+              value={form.documento}
+              onChange={(e) => set('documento', e.target.value)}
               className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
@@ -79,9 +100,9 @@ export default function AddDebtorModal({ onClose, onSave }: AddDebtorModalProps)
           </button>
           <button
             onClick={handleSave}
-            disabled={!isValid}
+            disabled={!isValid || isPending}
             className={`flex-1 py-2 rounded-lg text-sm font-semibold text-white transition-colors ${
-              isValid
+              isValid && !isPending
                 ? 'bg-blue-600 hover:bg-blue-700 cursor-pointer'
                 : 'bg-blue-200 cursor-not-allowed'
             }`}

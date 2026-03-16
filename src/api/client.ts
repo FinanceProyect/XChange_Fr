@@ -1,8 +1,7 @@
 import axios from "axios"
 
-// TODO: Replace with real backend URL when available
 export const apiClient = axios.create({
-  baseURL: "TODO_BACKEND_URL",
+  baseURL: "http://localhost:8080/api",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
