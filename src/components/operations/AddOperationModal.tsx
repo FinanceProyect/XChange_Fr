@@ -3,11 +3,15 @@ import { X } from "lucide-react";
 import type { OperationType, OperationCurrency } from "../../data/mockData";
 import { useCreateOperacion } from "../../queries/operaciones.query";
 
+const QUILATAJE_OPTIONS = ["8k", "9k", "10k", "14k", "18k", "22k", "24k"];
+
 interface FormState {
   currency: OperationCurrency | "";
   type: OperationType | "";
   amount: string;
   cotizacion: string;
+  quilataje: string;
+  peso: string;
   addDebtor: boolean;
   debtorName: string;
   debtorDocument: string;
@@ -18,6 +22,8 @@ const EMPTY: FormState = {
   type: "",
   amount: "",
   cotizacion: "",
+  quilataje: "",
+  peso: "",
   addDebtor: false,
   debtorName: "",
   debtorDocument: "",
@@ -33,29 +39,43 @@ export default function AddOperationModal({
   onSave,
 }: AddOperationModalProps) {
   const [form, setForm] = useState<FormState>(EMPTY);
+  const [submitted, setSubmitted] = useState(false);
   const { mutate: createOperacion, isPending } = useCreateOperacion();
+
+  const isMetal = form.currency === "METAL";
 
   const baseValid =
     form.currency !== "" &&
     form.type !== "" &&
-    form.amount !== "" &&
-    form.cotizacion !== "";
+    form.cotizacion !== "" &&
+    parseFloat(form.cotizacion) > 0;
+
+  const metalValid = isMetal
+    ? form.quilataje !== "" && form.peso !== "" && parseFloat(form.peso) > 0
+    : form.amount !== "";
 
   const debtorValid =
     !form.addDebtor ||
     (form.debtorName.trim() !== "" && form.debtorDocument.trim() !== "");
 
-  const isValid = baseValid && debtorValid;
+  const isValid = baseValid && metalValid && debtorValid;
 
   const set = <K extends keyof FormState>(field: K, value: FormState[K]) =>
     setForm((prev) => ({ ...prev, [field]: value }));
 
+  const handleCurrencyChange = (value: OperationCurrency | "") => {
+    setForm((prev) => ({
+      ...prev,
+      currency: value,
+      amount: "",
+      quilataje: "",
+      peso: "",
+    }));
+  };
+
   const toggleDebtorSection = () =>
     setForm((prev) => {
-      if (prev.type !== "Venta") {
-        return prev;
-      }
-
+      if (prev.type !== "Venta") return prev;
       const nextAdd = !prev.addDebtor;
       return {
         ...prev,
@@ -75,13 +95,21 @@ export default function AddOperationModal({
     }));
 
   const handleSave = () => {
+    setSubmitted(true);
     if (!isValid) return;
+
     const payload: Record<string, unknown> = {
       tipo: form.type === "Compra" ? "COMPRA" : "VENTA",
       activoId: form.currency,
-      monto: parseFloat(form.amount),
       tasaCambio: parseFloat(form.cotizacion),
     };
+
+    if (isMetal) {
+      payload.quilataje = form.quilataje;
+      payload.peso = parseFloat(form.peso);
+    } else {
+      payload.monto = parseFloat(form.amount);
+    }
 
     if (form.addDebtor && form.type === "Venta") {
       payload.nombre = form.debtorName.trim();
@@ -95,6 +123,13 @@ export default function AddOperationModal({
       },
     });
   };
+
+  const fieldClass = (invalid: boolean) =>
+    `w-full text-sm border rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 ${
+      invalid
+        ? "border-red-400 focus:ring-red-400"
+        : "border-gray-200 focus:ring-blue-500"
+    }`;
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center">
@@ -142,13 +177,13 @@ export default function AddOperationModal({
         </div>
 
         <div className="flex flex-col gap-3">
-          {/* Moneda */}
+          {/* Moneda / Activo */}
           <div>
             <label className="text-xs text-gray-500 mb-1 block">Moneda</label>
             <select
               value={form.currency}
               onChange={(e) =>
-                set("currency", e.target.value as OperationCurrency)
+                handleCurrencyChange(e.target.value as OperationCurrency | "")
               }
               className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
@@ -157,22 +192,76 @@ export default function AddOperationModal({
               <option value="USD">$ Dólar (USD)</option>
               <option value="BRL">R$ Real Brasileño (BRL)</option>
               <option value="USDT">₮ Tether (USDT)</option>
+              <option value="METAL">Metal</option>
             </select>
           </div>
 
-          {/* Cantidad */}
-          <div>
-            <label className="text-xs text-gray-500 mb-1 block">Cantidad</label>
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              placeholder="0.00"
-              value={form.amount}
-              onChange={(e) => set("amount", e.target.value)}
-              className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
+          {/* Campos dinámicos según moneda */}
+          {isMetal ? (
+            <>
+              {/* Quilataje */}
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">
+                  Quilataje
+                </label>
+                <select
+                  value={form.quilataje}
+                  onChange={(e) => set("quilataje", e.target.value)}
+                  className={fieldClass(submitted && form.quilataje === "")}
+                >
+                  <option value="">Seleccionar quilataje</option>
+                  {QUILATAJE_OPTIONS.map((q) => (
+                    <option key={q} value={q}>
+                      {q}
+                    </option>
+                  ))}
+                </select>
+                {submitted && form.quilataje === "" && (
+                  <p className="text-xs text-red-500 mt-0.5">Campo requerido</p>
+                )}
+              </div>
+
+              {/* Peso */}
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">
+                  Peso (gramos)
+                </label>
+                <input
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={form.peso}
+                  onChange={(e) => set("peso", e.target.value)}
+                  className={fieldClass(
+                    submitted &&
+                      (form.peso === "" || parseFloat(form.peso) <= 0)
+                  )}
+                />
+                {submitted && (form.peso === "" || parseFloat(form.peso) <= 0) && (
+                  <p className="text-xs text-red-500 mt-0.5">
+                    Debe ser mayor a 0
+                  </p>
+                )}
+              </div>
+            </>
+          ) : (
+            /* Cantidad (monedas estándar) */
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">
+                Cantidad
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                value={form.amount}
+                onChange={(e) => set("amount", e.target.value)}
+                className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+          )}
 
           {/* Cotización */}
           <div>
@@ -186,8 +275,17 @@ export default function AddOperationModal({
               placeholder="0.0000"
               value={form.cotizacion}
               onChange={(e) => set("cotizacion", e.target.value)}
-              className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className={fieldClass(
+                submitted &&
+                  (form.cotizacion === "" || parseFloat(form.cotizacion) <= 0)
+              )}
             />
+            {submitted &&
+              (form.cotizacion === "" || parseFloat(form.cotizacion) <= 0) && (
+                <p className="text-xs text-red-500 mt-0.5">
+                  Debe ser mayor a 0
+                </p>
+              )}
           </div>
 
           {/* Toggle deudor */}
@@ -276,7 +374,7 @@ export default function AddOperationModal({
           </button>
           <button
             onClick={handleSave}
-            disabled={!isValid || isPending}
+            disabled={isPending}
             className={`flex-1 py-2 rounded-lg text-sm font-semibold text-white transition-colors ${
               isValid && !isPending
                 ? "bg-blue-600 hover:bg-blue-700 cursor-pointer"

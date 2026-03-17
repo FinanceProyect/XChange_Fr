@@ -30,6 +30,7 @@ export default function OperationsFilters({
           <option value="USD">USD</option>
           <option value="BRL">BRL</option>
           <option value="USDT">USDT</option>
+          <option value="METAL">Metal</option>
         </select>
         <select
           value={type}

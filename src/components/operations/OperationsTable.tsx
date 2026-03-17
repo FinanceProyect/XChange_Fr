@@ -5,17 +5,19 @@ import { operacionToFrontend, type BackendOperacion } from '../../adapters/opera
 import Pagination from '../ui/Pagination'
 
 const currencySymbol: Record<OperationCurrency, string> = {
-  EUR:  '€',
-  USD:  '$',
-  BRL:  'R$',
-  USDT: '₮',
+  EUR:   '€',
+  USD:   '$',
+  BRL:   'R$',
+  USDT:  '₮',
+  METAL: 'g',
 }
 
 const currencyColors: Record<OperationCurrency, string> = {
-  EUR:  'bg-blue-100 text-blue-700',
-  USD:  'bg-green-100 text-green-700',
-  BRL:  'bg-yellow-100 text-yellow-700',
-  USDT: 'bg-purple-100 text-purple-700',
+  EUR:   'bg-blue-100 text-blue-700',
+  USD:   'bg-green-100 text-green-700',
+  BRL:   'bg-yellow-100 text-yellow-700',
+  USDT:  'bg-purple-100 text-purple-700',
+  METAL: 'bg-amber-100 text-amber-700',
 }
 
 const typeColors: Record<OperationType, string> = {
@@ -68,16 +70,18 @@ export default function OperationsTable({ currency, type }: OperationsTableProps
             </thead>
             <tbody>
               {rows.map((op) => {
-                const sym    = currencySymbol[op.currency]
-                const profit = ((op.sellPrice - op.buyPrice) * op.amount).toFixed(2)
-                const isUp   = parseFloat(profit) >= 0
+                const sym      = currencySymbol[op.currency]
+                const isMetal  = op.currency === 'METAL'
+                const profit   = ((op.sellPrice - op.buyPrice) * op.amount).toFixed(2)
+                const isUp     = parseFloat(profit) >= 0
 
                 return (
                   <tr key={op.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                     <td className="py-3 text-gray-600">{op.date}</td>
                     <td className="py-3">
                       <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${currencyColors[op.currency]}`}>
-                        {sym} {op.currency}
+                        {isMetal ? '' : `${sym} `}{op.currency}
+                        {op.quilataje ? ` ${op.quilataje}` : ''}
                       </span>
                     </td>
                     <td className="py-3">
@@ -86,13 +90,15 @@ export default function OperationsTable({ currency, type }: OperationsTableProps
                       </span>
                     </td>
                     <td className="py-3 text-right text-gray-700 font-medium">
-                      {sym}{op.amount.toLocaleString()}
+                      {isMetal
+                        ? `${(op.peso ?? op.amount).toLocaleString()} g`
+                        : `${sym}${op.amount.toLocaleString()}`}
                     </td>
                     <td className="py-3 text-right text-gray-700">
-                      {sym}{op.buyPrice.toFixed(4)}
+                      {isMetal ? '' : sym}{op.buyPrice.toFixed(4)}
                     </td>
                     <td className={`py-3 text-right font-semibold ${isUp ? 'text-green-600' : 'text-red-500'}`}>
-                      {isUp ? '+' : ''}{sym}{profit}
+                      {isUp ? '+' : ''}{isMetal ? '' : sym}{profit}
                     </td>
                   </tr>
                 )

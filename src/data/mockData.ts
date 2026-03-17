@@ -208,7 +208,7 @@ export const openPositionsData: OpenPosition[] = [
 
 // ── Operations ───────────────────────────────────────────────
 
-export type OperationCurrency = 'EUR' | 'USD' | 'BRL' | 'USDT'
+export type OperationCurrency = 'EUR' | 'USD' | 'BRL' | 'USDT' | 'METAL'
 export type OperationType = 'Compra' | 'Venta'
 
 export interface Operation {
@@ -219,6 +219,8 @@ export interface Operation {
   amount: number
   buyPrice: number
   sellPrice: number
+  quilataje?: string
+  peso?: number
 }
 
 export const operationsData: Operation[] = [

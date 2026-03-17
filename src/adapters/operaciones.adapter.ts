@@ -17,10 +17,11 @@ const tipoMap: Record<BackendOperacion['tipo'], OperationType> = {
 
 // activoId es el mismo código de moneda que usa el frontend
 const activoIdToCurrency: Record<string, OperationCurrency> = {
-  EUR:  'EUR',
-  USD:  'USD',
-  BRL:  'BRL',
-  USDT: 'USDT',
+  EUR:   'EUR',
+  USD:   'USD',
+  BRL:   'BRL',
+  USDT:  'USDT',
+  METAL: 'METAL',
 }
 
 export function operacionToFrontend(op: BackendOperacion): Operation {
