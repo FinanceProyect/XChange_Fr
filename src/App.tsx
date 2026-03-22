@@ -1,9 +1,10 @@
-import { Routes, Route } from 'react-router-dom'
-import Navbar from './components/layout/Navbar'
-import Dashboard from './pages/Dashboard'
-import Operations from './pages/Operations'
-import Debtors from './pages/Debtors'
-import Settings from './pages/Settings'
+import { Routes, Route } from "react-router-dom";
+import Navbar from "./components/layout/Navbar";
+import Dashboard from "./pages/Dashboard";
+import Operations from "./pages/Operations";
+import Debtors from "./pages/Debtors";
+import Settings from "./pages/Settings";
+import GlobalToastHost from "./components/ui/GlobalToastHost";
 
 function App() {
   return (
@@ -11,14 +12,15 @@ function App() {
       <Navbar />
       <main className="max-w-[1320px] mx-auto">
         <Routes>
-          <Route path="/"         element={<Dashboard />} />
-        <Route path="/operations"  element={<Operations />}  />
-        <Route path="/debtors"     element={<Debtors />}     />
-        <Route path="/settings"    element={<Settings />}    />
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/operations" element={<Operations />} />
+          <Route path="/debtors" element={<Debtors />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </main>
+      <GlobalToastHost />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

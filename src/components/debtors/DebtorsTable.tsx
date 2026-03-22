@@ -1,28 +1,43 @@
 import { useState } from "react";
-import { CheckCircle, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import Pagination from "../ui/Pagination";
 import EditDebtorModal from "./EditDebtorModal";
 import type { Debtor } from "../../data/mockData";
-import { useDeudores, useSaldarDeudor } from "../../queries/deudores.query";
+import { useDeudores, usePagarDeudor } from "../../queries/deudores.query";
 import {
   deudorToFrontend,
   type BackendDeudor,
 } from "../../adapters/deudores.adapter";
+import { showToast } from "../../lib/toastBus";
+import {
+  formatDateValue,
+  formatTimeValue,
+  parseDateValue,
+} from "../../utils/date";
+import MarkAsPaidButton from "./MarkAsPaidButton";
+
+const parseAmount = (value: string | number | null | undefined) => {
+  if (value === null || value === undefined) return 0;
+  if (typeof value === "number") return value;
+  const sanitized = value.replace(/[^0-9.-]/g, "");
+  const parsed = parseFloat(sanitized);
+  return Number.isNaN(parsed) ? 0 : parsed;
+};
 
 const PAGE_SIZE = 8;
 
 export default function DebtorsTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [editingDebtor, setEditingDebtor] = useState<Debtor | null>(null);
+  const [payingId, setPayingId] = useState<string | null>(null);
 
   const { data, isLoading } = useDeudores();
-  const { mutate: saldar } = useSaldarDeudor();
+  const { mutate: pagarDeudor, isPending: isPaying } = usePagarDeudor();
 
-  const debtors: Debtor[] = ((data as BackendDeudor[] | undefined) ?? []).map(
-    deudorToFrontend,
-  );
+  const debtors: Debtor[] = ((data as BackendDeudor[] | undefined) ?? [])
+    .map(deudorToFrontend)
+    .sort((a, b) => parseDateValue(b.date) - parseDateValue(a.date));
 
   const filtered = debtors.filter((d) =>
     d.name.toLowerCase().includes(search.toLowerCase()),
@@ -33,22 +48,60 @@ export default function DebtorsTable() {
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE,
   );
+  const emptyRows = Math.max(0, PAGE_SIZE - paginated.length);
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
     setCurrentPage(1);
   };
 
+  const handleMarkAsPaid = (debtor: Debtor) => {
+    const document = debtor.document?.trim();
+    const amountValue = parseAmount(debtor.amount ?? "");
+
+    if (!document) {
+      showToast({
+        message: "El deudor no tiene documento para registrar el pago",
+        variant: "error",
+      });
+      return;
+    }
+
+    if (amountValue <= 0) {
+      showToast({
+        message: "El importe pendiente no es válido",
+        variant: "error",
+      });
+      return;
+    }
+
+    setPayingId(debtor.id);
+
+    pagarDeudor(
+      { documento: document, importe: amountValue },
+      {
+        onSuccess: (updated) => {
+          const nextState = (
+            (updated as { state?: string; estado?: string } | undefined)
+              ?.state ??
+            (updated as { estado?: string } | undefined)?.estado ??
+            ""
+          ).toString();
+
+          if (nextState.toUpperCase() === "PAGADO") {
+            showToast({
+              message: "El usuario ya ha pagado su deuda",
+              variant: "success",
+            });
+          }
+        },
+        onSettled: () => setPayingId(null),
+      },
+    );
+  };
+
   return (
     <>
-      {/* Overlay to close menu on outside click */}
-      {openMenuId !== null && (
-        <div
-          className="fixed inset-0 z-0"
-          onClick={() => setOpenMenuId(null)}
-        />
-      )}
-
       <div className="bg-white rounded-xl border border-gray-200 p-5">
         {/* Search filter */}
         <div className="mb-4">
@@ -73,13 +126,24 @@ export default function DebtorsTable() {
 
         {!isLoading && (
           <>
-            <table className="w-full text-sm">
+            <table className="w-full text-sm table-fixed">
+              <colgroup>
+                <col className="w-[110px]" />
+                <col className="w-[90px]" />
+                <col className="w-[220px]" />
+                <col className="w-[150px]" />
+                <col className="w-[130px]" />
+                <col className="w-[140px]" />
+                <col className="w-[80px]" />
+              </colgroup>
               <thead>
                 <tr className="text-xs text-gray-400 uppercase border-b border-gray-100">
                   <th className="text-left py-2 font-medium">Fecha</th>
+                  <th className="text-left py-2 font-medium">Hora</th>
                   <th className="text-left py-2 font-medium">Nombre</th>
                   <th className="text-left py-2 font-medium">Documento</th>
                   <th className="text-left py-2 font-medium">Importe</th>
+                  <th className="text-left py-2 font-medium pl-6">Estado</th>
                   <th className="py-2 font-medium" />
                 </tr>
               </thead>
@@ -87,10 +151,22 @@ export default function DebtorsTable() {
                 {paginated.map((debtor) => (
                   <tr
                     key={debtor.id}
-                    onClick={() => setEditingDebtor(debtor)}
-                    className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer"
+                    onClick={() => {
+                      if (debtor.status === "Paid") return;
+                      setEditingDebtor(debtor);
+                    }}
+                    className={`h-14 align-middle border-b border-gray-50 hover:bg-gray-50 transition-colors ${
+                      debtor.status === "Paid"
+                        ? "cursor-default"
+                        : "cursor-pointer"
+                    }`}
                   >
-                    <td className="py-3 text-gray-600">{debtor.date}</td>
+                    <td className="py-3 text-gray-600">
+                      {formatDateValue(debtor.date)}
+                    </td>
+                    <td className="py-3 text-gray-600">
+                      {formatTimeValue(debtor.date)}
+                    </td>
                     <td className="py-3">
                       <div className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-600">
@@ -107,49 +183,46 @@ export default function DebtorsTable() {
                     <td className="py-3 font-medium text-green-600">
                       {debtor.amount || "—"}
                     </td>
+                    <td className="py-3 pl-6">
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                          debtor.status === "Paid"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-amber-100 text-amber-700"
+                        }`}
+                      >
+                        {debtor.status === "Paid" ? "Pagado" : "Pendiente"}
+                      </span>
+                    </td>
                     <td className="py-3 text-right">
-                      <div className="relative inline-block">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setOpenMenuId(
-                              openMenuId === debtor.id ? null : debtor.id,
-                            );
-                          }}
-                          className="text-green-500 hover:text-green-600 cursor-pointer transition-colors"
-                        >
-                          <CheckCircle size={16} />
-                        </button>
-                        {openMenuId === debtor.id && (
-                          <div className="absolute right-0 top-6 z-10 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[170px]">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setOpenMenuId(null);
-                                saldar(debtor.id);
-                              }}
-                              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
-                            >
-                              Marcar como pagado
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                      <MarkAsPaidButton
+                        disabled={debtor.status === "Paid"}
+                        loading={isPaying && payingId === debtor.id}
+                        onConfirm={() => handleMarkAsPaid(debtor)}
+                      />
                     </td>
                   </tr>
                 ))}
-                {paginated.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      className="py-8 text-center text-sm text-gray-400"
+                {emptyRows > 0 &&
+                  Array.from({ length: emptyRows }).map((_, index) => (
+                    <tr
+                      key={`placeholder-${index}`}
+                      className="h-14 align-middle border-b border-gray-50"
+                      aria-hidden
                     >
-                      No se encontraron resultados
-                    </td>
-                  </tr>
-                )}
+                      <td className="py-3" colSpan={7}>
+                        <span className="opacity-0">placeholder</span>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
+
+            {paginated.length === 0 && (
+              <p className="py-6 text-center text-sm text-gray-400">
+                No se encontraron resultados
+              </p>
+            )}
 
             <div className="flex items-center justify-between mt-4">
               <p className="text-xs text-gray-500">

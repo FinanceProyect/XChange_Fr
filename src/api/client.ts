@@ -1,4 +1,5 @@
 import axios from "axios"
+import { showToast } from "../lib/toastBus"
 
 export const apiClient = axios.create({
   baseURL: "http://localhost:8080/api",
@@ -15,13 +16,16 @@ export const apiClient = axios.create({
 //   return config
 // })
 
-// TODO: Add response interceptor for error handling and refresh token logic
-// apiClient.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     if (error.response?.status === 401) {
-//       // TODO: implement refresh token logic
-//     }
-//     return Promise.reject(error)
-//   }
-// )
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const message =
+      error.response?.data?.message ??
+      error.message ??
+      "Ocurrió un error inesperado";
+
+    showToast({ message, variant: "error" });
+
+    return Promise.reject(error);
+  },
+)

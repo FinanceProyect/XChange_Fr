@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import StatsCard from "../components/dashboard/StatsCard";
 import CurrencyStatCard from "../components/dashboard/CurrencyStatCard";
 import PortfolioChart from "../components/dashboard/PortfolioChart";
@@ -16,6 +17,7 @@ interface DashboardStats {
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { data } = useDashboardStats();
   const { data: remoteBalances } = useDashboardCurrencyBalances();
   const stats = data as DashboardStats | undefined;
@@ -45,6 +47,8 @@ export default function Dashboard() {
     trendUp: stats?.trendUp ?? totalBalanceCard.trendUp,
   };
 
+  const showBalanceAlert = balances.length === 0 || totalFromCards <= 0;
+
   return (
     <div className="bg-gray-50 px-5 py-5 lg:px-8 lg:py-6">
       <div className="mb-5">
@@ -55,6 +59,27 @@ export default function Dashboard() {
           Welcome back! Here's your financial overview.
         </p>
       </div>
+
+      {showBalanceAlert && (
+        <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900 shadow-sm md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm font-semibold">
+              Saldo disponible sin configurar
+            </p>
+            <p className="text-xs mt-1 text-amber-800">
+              Para empezar a operar, establece un saldo inicial en la sección de
+              configuración.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate("/settings")}
+            className="inline-flex items-center justify-center rounded-lg bg-amber-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-amber-700"
+          >
+            Ir a configuración
+          </button>
+        </div>
+      )}
 
       {/* Total Balance + monedas */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 lg:gap-4 mb-5">
@@ -67,7 +92,7 @@ export default function Dashboard() {
       {/* Portfolio chart + últimas operaciones */}
       <div className="flex flex-col lg:flex-row gap-4 items-stretch">
         <div className="lg:flex-[3] flex flex-col">
-          <PortfolioChart balances={balances} />
+          <PortfolioChart />
         </div>
         <div className="lg:flex-[2] flex flex-col">
           <RecentOperations operations={stats?.recentOperations} />

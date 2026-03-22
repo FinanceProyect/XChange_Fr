@@ -196,72 +196,88 @@ export default function AddOperationModal({
             </select>
           </div>
 
-          {/* Campos dinámicos según moneda */}
-          {isMetal ? (
-            <>
-              {/* Quilataje */}
-              <div>
-                <label className="text-xs text-gray-500 mb-1 block">
-                  Quilataje
-                </label>
-                <select
-                  value={form.quilataje}
-                  onChange={(e) => set("quilataje", e.target.value)}
-                  className={fieldClass(submitted && form.quilataje === "")}
-                >
-                  <option value="">Seleccionar quilataje</option>
-                  {QUILATAJE_OPTIONS.map((q) => (
-                    <option key={q} value={q}>
-                      {q}
-                    </option>
-                  ))}
-                </select>
-                {submitted && form.quilataje === "" && (
-                  <p className="text-xs text-red-500 mt-0.5">Campo requerido</p>
-                )}
-              </div>
+          {/* Campos de metal visibles siempre */}
+          <div className="grid grid-cols-1 gap-3">
+            {/* Quilataje */}
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">
+                Quilataje
+              </label>
+              <select
+                value={form.quilataje}
+                onChange={(e) => set("quilataje", e.target.value)}
+                disabled={!isMetal}
+                className={`${fieldClass(
+                  submitted && isMetal && form.quilataje === "",
+                )} ${
+                  isMetal
+                    ? "bg-white"
+                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                }`}
+              >
+                <option value="">Seleccionar quilataje</option>
+                {QUILATAJE_OPTIONS.map((q) => (
+                  <option key={q} value={q}>
+                    {q}
+                  </option>
+                ))}
+              </select>
+              {submitted && isMetal && form.quilataje === "" && (
+                <p className="text-xs text-red-500 mt-0.5">Campo requerido</p>
+              )}
+            </div>
 
-              {/* Peso */}
-              <div>
-                <label className="text-xs text-gray-500 mb-1 block">
-                  Peso (gramos)
-                </label>
-                <input
-                  type="number"
-                  min="0.01"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={form.peso}
-                  onChange={(e) => set("peso", e.target.value)}
-                  className={fieldClass(
-                    submitted &&
-                      (form.peso === "" || parseFloat(form.peso) <= 0)
-                  )}
-                />
-                {submitted && (form.peso === "" || parseFloat(form.peso) <= 0) && (
+            {/* Peso */}
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">
+                Peso (gramos)
+              </label>
+              <input
+                type="number"
+                min="0.01"
+                step="0.01"
+                placeholder="0.00"
+                value={form.peso}
+                onChange={(e) => set("peso", e.target.value)}
+                disabled={!isMetal}
+                className={`${fieldClass(
+                  submitted &&
+                    isMetal &&
+                    (form.peso === "" || parseFloat(form.peso) <= 0),
+                )} ${
+                  isMetal
+                    ? "bg-white"
+                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                }`}
+              />
+              {submitted &&
+                isMetal &&
+                (form.peso === "" || parseFloat(form.peso) <= 0) && (
                   <p className="text-xs text-red-500 mt-0.5">
                     Debe ser mayor a 0
                   </p>
                 )}
-              </div>
-            </>
-          ) : (
-            /* Cantidad (monedas estándar) */
-            <div>
-              <label className="text-xs text-gray-500 mb-1 block">
-                Cantidad
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="0.00"
-                value={form.amount}
-                onChange={(e) => set("amount", e.target.value)}
-                className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
             </div>
-          )}
+          </div>
+
+          {/* Cantidad (siempre visible pero deshabilitada para metal) */}
+          <div>
+            <label className="text-xs text-gray-500 mb-1 block">Cantidad</label>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="0.00"
+              value={form.amount}
+              onChange={(e) => set("amount", e.target.value)}
+              disabled={isMetal}
+              className={`w-full text-sm border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                isMetal
+                  ? "border-gray-100 bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "border-gray-200 text-gray-700"
+              }`}
+            />
+          </div>
 
           {/* Cotización */}
           <div>
@@ -277,7 +293,7 @@ export default function AddOperationModal({
               onChange={(e) => set("cotizacion", e.target.value)}
               className={fieldClass(
                 submitted &&
-                  (form.cotizacion === "" || parseFloat(form.cotizacion) <= 0)
+                  (form.cotizacion === "" || parseFloat(form.cotizacion) <= 0),
               )}
             />
             {submitted &&

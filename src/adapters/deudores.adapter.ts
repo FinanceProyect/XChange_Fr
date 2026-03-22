@@ -7,6 +7,8 @@ export interface BackendDeudor {
   documento: string
   fecha: string
   importe: number | null
+  estado?: string
+  state?: string
 }
 
 function buildAvatar(nombre: string): string {
@@ -18,6 +20,16 @@ function buildAvatar(nombre: string): string {
 }
 
 export function deudorToFrontend(deudor: BackendDeudor): Debtor {
+  const rawStatus = (deudor.estado ?? deudor.state ?? '').toLowerCase()
+  const normalizedStatus =
+    rawStatus === 'paid' || rawStatus === 'pagado'
+      ? 'Paid'
+      : rawStatus === 'pending' || rawStatus === 'pendiente'
+        ? 'Pending'
+        : rawStatus === 'overdue' || rawStatus === 'vencido'
+          ? 'Overdue'
+          : 'Pending'
+
   return {
     id:     deudor.id,
     name:   deudor.nombre,
@@ -25,6 +37,6 @@ export function deudorToFrontend(deudor: BackendDeudor): Debtor {
     document: deudor.documento,
     date:   deudor.fecha,
     amount: deudor.importe === null || deudor.importe === undefined ? '' : String(deudor.importe),
-    status: 'Pending',
+    status: normalizedStatus,
   }
 }

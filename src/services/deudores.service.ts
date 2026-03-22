@@ -20,14 +20,13 @@ export const update = async (id: string, data: unknown) => {
   return response.data
 }
 
-export const remove = async (id: string) => {
-  const response = await apiClient.delete(`/deudores/${id}`)
+export const pagar = async (data: { documento: string; importe: number }) => {
+  const response = await apiClient.put("/deudores/pagar", data)
   return response.data
 }
 
-// Salda la deuda activa del deudor — POST /deudores/{id}/saldar
-export const saldar = async (id: string) => {
-  const response = await apiClient.post(`/deudores/${id}/saldar`)
+export const remove = async (id: string) => {
+  const response = await apiClient.delete(`/deudores/${id}`)
   return response.data
 }
 

@@ -42,14 +42,6 @@ export const portfolioData = [
   { name: 'Assets', value: 10, color: '#22c55e' },
 ]
 
-export const monthlyTrendsData = [
-  { month: 'Jan', balance: 18000, debts: 9000 },
-  { month: 'Feb', balance: 19500, debts: 8800 },
-  { month: 'Mar', balance: 20000, debts: 9200 },
-  { month: 'Apr', balance: 21500, debts: 8500 },
-  { month: 'May', balance: 23000, debts: 8200 },
-  { month: 'Jun', balance: 24580, debts: 8450 },
-]
 
 export type DebtorStatus = 'Overdue' | 'Pending' | 'Paid'
 
@@ -214,6 +206,8 @@ export type OperationType = 'Compra' | 'Venta'
 export interface Operation {
   id: string
   date: string
+  dateTime?: string
+  time?: string
   currency: OperationCurrency
   type: OperationType
   amount: number

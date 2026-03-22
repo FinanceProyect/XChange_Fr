@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Wallet, Globe, PiggyBank, LogOut, Save } from "lucide-react";
+import { Wallet, Globe, PiggyBank, Save } from "lucide-react";
 import { currencyBalances } from "../data/mockData";
 import {
   useConfiguracion,
@@ -109,10 +109,6 @@ export default function Settings() {
             >
               <Save size={14} />
               {isPending ? "Guardando..." : "Guardar cambios"}
-            </button>
-            <button className="flex items-center gap-1.5 px-4 py-2 border border-red-200 text-red-500 hover:bg-red-50 text-sm font-semibold rounded-lg transition-colors cursor-pointer">
-              <LogOut size={14} />
-              Cerrar sesión
             </button>
           </div>
         </div>

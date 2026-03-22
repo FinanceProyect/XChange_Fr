@@ -4,8 +4,8 @@ import {
   extenderFecha,
   getAll,
   getById,
+  pagar,
   remove,
-  saldar,
   update,
 } from "../services/deudores.service"
 
@@ -47,22 +47,23 @@ export const useUpdateDeudor = () => {
   })
 }
 
-export const useDeleteDeudor = () => {
+export const usePagarDeudor = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (id: string) => remove(id),
+    mutationFn: (data: { documento: string; importe: number }) =>
+      pagar(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["deudores"] })
     },
   })
 }
 
-export const useSaldarDeudor = () => {
+export const useDeleteDeudor = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (id: string) => saldar(id),
+    mutationFn: (id: string) => remove(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["deudores"] })
     },

@@ -25,9 +25,12 @@ const activoIdToCurrency: Record<string, OperationCurrency> = {
 }
 
 export function operacionToFrontend(op: BackendOperacion): Operation {
+  const isoDate = op.fechaHora
+  const [datePart] = op.fechaHora.split('T')
   return {
     id:        op.id,
-    date:      op.fechaHora.split('T')[0],
+    date:      datePart,
+    dateTime:  isoDate,
     currency:  activoIdToCurrency[op.activoId] ?? 'USD',
     type:      tipoMap[op.tipo],
     amount:    op.monto,
