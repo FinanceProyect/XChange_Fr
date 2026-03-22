@@ -11,7 +11,9 @@ export const getCurrencyBalances = async () => {
   return response.data
 }
 
-export const getBalanceSnapshots = async () => {
-  const response = await apiClient.get("/balance/stats")
+export const getBalanceSnapshots = async (fecha: string) => {
+  const response = await apiClient.get("/balance/stats", {
+    params: { fecha },
+  })
   return response.data
 }

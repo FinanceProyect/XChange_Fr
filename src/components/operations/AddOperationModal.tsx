@@ -34,6 +34,24 @@ interface AddOperationModalProps {
   onSave: () => void;
 }
 
+const formatLocalDateTime = () => {
+  const now = new Date();
+  const pad = (value: number) => value.toString().padStart(2, "0");
+  const year = now.getFullYear();
+  const month = pad(now.getMonth() + 1);
+  const day = pad(now.getDate());
+  const hours = pad(now.getHours());
+  const minutes = pad(now.getMinutes());
+  const seconds = pad(now.getSeconds());
+
+  const offsetMinutes = now.getTimezoneOffset();
+  const sign = offsetMinutes > 0 ? "-" : "+";
+  const offsetHours = pad(Math.floor(Math.abs(offsetMinutes) / 60));
+  const offsetRemainder = pad(Math.abs(offsetMinutes) % 60);
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${sign}${offsetHours}:${offsetRemainder}`;
+};
+
 export default function AddOperationModal({
   onClose,
   onSave,
@@ -102,6 +120,7 @@ export default function AddOperationModal({
       tipo: form.type === "Compra" ? "COMPRA" : "VENTA",
       activoId: form.currency,
       tasaCambio: parseFloat(form.cotizacion),
+      fechaHora: formatLocalDateTime(),
     };
 
     if (isMetal) {

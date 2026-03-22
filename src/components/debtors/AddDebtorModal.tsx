@@ -15,6 +15,22 @@ interface AddDebtorModalProps {
   onSave: () => void
 }
 
+const formatLocalDateTime = () => {
+  const now = new Date()
+  const pad = (value: number) => value.toString().padStart(2, '0')
+  const year = now.getFullYear()
+  const month = pad(now.getMonth() + 1)
+  const day = pad(now.getDate())
+  const hours = pad(now.getHours())
+  const minutes = pad(now.getMinutes())
+  const seconds = pad(now.getSeconds())
+  const offsetMinutes = now.getTimezoneOffset()
+  const sign = offsetMinutes > 0 ? '-' : '+'
+  const offsetHours = pad(Math.floor(Math.abs(offsetMinutes) / 60))
+  const offsetRemainder = pad(Math.abs(offsetMinutes) % 60)
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${sign}${offsetHours}:${offsetRemainder}`
+}
+
 export default function AddDebtorModal({ onClose, onSave }: AddDebtorModalProps) {
   const [form, setForm] = useState<FormState>(EMPTY)
   const { mutate: createDeudor, isPending } = useCreateDeudor()
@@ -27,7 +43,12 @@ export default function AddDebtorModal({ onClose, onSave }: AddDebtorModalProps)
   const handleSave = () => {
     if (!isValid) return
     createDeudor(
-      { nombre: form.nombre, documento: form.documento, importe: parseFloat(form.importe) },
+      {
+        nombre: form.nombre,
+        documento: form.documento,
+        importe: parseFloat(form.importe),
+        fechaHora: formatLocalDateTime(),
+      },
       {
         onSuccess: () => {
           onSave()

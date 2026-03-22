@@ -9,6 +9,14 @@ import {
 
 const ONE_HOUR_MS = 60 * 60 * 1000
 
+const getUserLocalDateString = () => {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = `${now.getMonth() + 1}`.padStart(2, "0")
+  const day = `${now.getDate()}`.padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
 export const useDashboardStats = () => {
   return useQuery({
     queryKey: ["dashboard", "stats"],
@@ -27,10 +35,12 @@ export const useDashboardCurrencyBalances = () => {
 }
 
 export const useBalanceSnapshots = () => {
+  const fecha = getUserLocalDateString()
+
   return useQuery({
-    queryKey: ["dashboard", "balance-snapshots"],
+    queryKey: ["dashboard", "balance-snapshots", fecha],
     queryFn: async () => {
-      const response = await getBalanceSnapshots()
+      const response = await getBalanceSnapshots(fecha)
       return balanceSnapshotsResponseToPoints(response)
     },
     refetchInterval: ONE_HOUR_MS,
