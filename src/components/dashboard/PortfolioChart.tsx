@@ -31,16 +31,61 @@ const tooltipFormatter = new Intl.NumberFormat("es-ES", {
   maximumFractionDigits: 0,
 });
 
-const axisFormatter = new Intl.NumberFormat("es-ES", {
-  style: "currency",
-  currency: "USD",
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
-
 const formatCurrencyAmount = (value: number) => {
   if (!Number.isFinite(value)) return "0";
   return Math.trunc(value).toString();
+};
+
+const AXIS_STEP = 10_000;
+const MIN_TICKS = 4;
+
+const getAxisConfig = (points: BalanceSnapshotPoint[]) => {
+  if (!points.length) {
+    return {
+      domain: [0, AXIS_STEP * MIN_TICKS] as [number, number],
+      ticks: Array.from(
+        { length: MIN_TICKS + 1 },
+        (_, index) => index * AXIS_STEP,
+      ),
+    } as const;
+  }
+
+  const totals = points
+    .map((point) => point.total)
+    .filter((value) => Number.isFinite(value) && value >= 0);
+
+  if (!totals.length) {
+    return {
+      domain: [0, AXIS_STEP * MIN_TICKS] as [number, number],
+      ticks: Array.from(
+        { length: MIN_TICKS + 1 },
+        (_, index) => index * AXIS_STEP,
+      ),
+    } as const;
+  }
+
+  const maxValue = Math.max(...totals);
+  let maxTick = Math.ceil(maxValue / AXIS_STEP) * AXIS_STEP;
+  if (maxTick === 0) {
+    maxTick = AXIS_STEP;
+  }
+
+  const ticks: number[] = [];
+  for (let value = 0; value <= maxTick; value += AXIS_STEP) {
+    ticks.push(value);
+  }
+
+  while (ticks.length < MIN_TICKS + 1) {
+    maxTick += AXIS_STEP;
+    ticks.push(maxTick);
+  }
+
+  const domain: [number, number] = [0, maxTick + AXIS_STEP];
+
+  return {
+    domain,
+    ticks,
+  } as const;
 };
 
 const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
@@ -76,7 +121,15 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
   );
 };
 
-const formatAxisValue = (value: number) => axisFormatter.format(value);
+const formatAxisValue = (value: number) => {
+  if (!Number.isFinite(value)) return "";
+  if (value === 0) return "0 US$";
+  const amountInThousands = value / 1000;
+  const formatted = new Intl.NumberFormat("es-ES", {
+    maximumFractionDigits: 0,
+  }).format(amountInThousands);
+  return `${formatted} mil US$`;
+};
 
 type ChartPoint = BalanceSnapshotPoint & { hasData: boolean };
 
@@ -107,16 +160,11 @@ const mergeSnapshotsWithHours = (
 export default function PortfolioChart() {
   const { data: snapshots = [], isLoading } = useBalanceSnapshots();
   const chartData = mergeSnapshotsWithHours(snapshots);
-  const totals = snapshots.map((point) => point.total);
+  const totals = snapshots
+    .map((point) => point.total)
+    .filter((value) => value >= 0);
   const hasData = totals.length > 0;
-  const minTotal = hasData ? Math.min(...totals) : 0;
-  const maxTotal = hasData ? Math.max(...totals) : 0;
-  const padding = hasData
-    ? Math.max(500, Math.round((maxTotal - minTotal) * 0.1))
-    : 0;
-  const domain: [number, number] = hasData
-    ? [Math.max(0, minTotal - padding), maxTotal + padding]
-    : [0, 1];
+  const { domain, ticks } = getAxisConfig(hasData ? snapshots : []);
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5 h-full flex flex-col">
@@ -161,6 +209,8 @@ export default function PortfolioChart() {
               axisLine={false}
               width={48}
               domain={domain}
+              ticks={ticks}
+              allowDecimals={false}
             />
             {hasData && (
               <Tooltip
