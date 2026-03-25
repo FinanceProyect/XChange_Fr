@@ -1,32 +1,111 @@
 interface CurrencyStatCardProps {
-  currency: string
-  symbol: string
-  amount: number
+  currency: string;
+  symbol: string;
+  amount: number;
 }
 
-const colorMap: Record<string, { bg: string; border: string; title: string; value: string; badge: string; badgeText: string }> = {
-  EUR:  { bg: 'bg-blue-50/60',   border: 'border-blue-100',   title: 'text-blue-400',   value: 'text-blue-800',   badge: 'bg-blue-100',   badgeText: 'text-blue-600'   },
-  USD:  { bg: 'bg-green-50/60',  border: 'border-green-100',  title: 'text-green-400',  value: 'text-green-800',  badge: 'bg-green-100',  badgeText: 'text-green-600'  },
-  BRL:  { bg: 'bg-yellow-50/60', border: 'border-yellow-100', title: 'text-yellow-500', value: 'text-yellow-800', badge: 'bg-yellow-100', badgeText: 'text-yellow-600' },
-  USDT: { bg: 'bg-purple-50/60', border: 'border-purple-100', title: 'text-purple-400', value: 'text-purple-800', badge: 'bg-purple-100', badgeText: 'text-purple-600' },
-}
+type Palette = {
+  panel: string;
+  border: string;
+  accent: string;
+  accentSoft: string;
+  badge: string;
+  badgeText: string;
+  glow: string;
+  dot: string;
+};
 
-const fallback = { bg: 'bg-gray-50', border: 'border-gray-100', title: 'text-gray-400', value: 'text-gray-800', badge: 'bg-gray-100', badgeText: 'text-gray-600' }
+const colorMap: Record<string, Palette> = {
+  ARS: {
+    panel: "bg-white",
+    border: "border-rose-200",
+    accent: "text-rose-600",
+    accentSoft: "",
+    badge: "",
+    badgeText: "",
+    glow: "",
+    dot: "bg-rose-500",
+  },
+  USD: {
+    panel: "bg-white",
+    border: "border-emerald-200",
+    accent: "text-emerald-600",
+    accentSoft: "",
+    badge: "",
+    badgeText: "",
+    glow: "",
+    dot: "bg-emerald-500",
+  },
+  EUR: {
+    panel: "bg-white",
+    border: "border-blue-200",
+    accent: "text-blue-600",
+    accentSoft: "",
+    badge: "",
+    badgeText: "",
+    glow: "",
+    dot: "bg-blue-500",
+  },
+  BRL: {
+    panel: "bg-white",
+    border: "border-amber-200",
+    accent: "text-amber-600",
+    accentSoft: "",
+    badge: "",
+    badgeText: "",
+    glow: "",
+    dot: "bg-amber-500",
+  },
+  USDT: {
+    panel: "bg-white",
+    border: "border-purple-200",
+    accent: "text-purple-600",
+    accentSoft: "",
+    badge: "",
+    badgeText: "",
+    glow: "",
+    dot: "bg-purple-500",
+  },
+};
 
-export default function CurrencyStatCard({ currency, symbol, amount }: CurrencyStatCardProps) {
-  const c = colorMap[currency] ?? fallback
+const fallback: Palette = {
+  panel: "bg-white",
+  border: "border-gray-200",
+  accent: "text-slate-500",
+  accentSoft: "",
+  badge: "",
+  badgeText: "",
+  glow: "",
+  dot: "bg-gray-400",
+};
+
+export default function CurrencyStatCard({
+  currency,
+  symbol,
+  amount,
+}: CurrencyStatCardProps) {
+  const palette = colorMap[currency] ?? fallback;
+  const safeAmount = Number.isFinite(amount) ? amount : 0;
 
   return (
-    <div className={`rounded-xl border p-4 flex items-start justify-between ${c.bg} ${c.border}`}>
+    <div
+      className={`overflow-hidden rounded-xl border ${palette.border} ${palette.panel} px-3 py-2`}
+    >
       <div>
-        <p className={`text-xs font-medium mb-1 ${c.title}`}>{currency}</p>
-        <p className={`text-2xl font-bold ${c.value}`}>
-          {symbol}{amount.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        <p
+          className={`text-[11px] font-semibold uppercase tracking-[0.2em] ${palette.accent}`}
+        >
+          {currency}
         </p>
-      </div>
-      <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold ${c.badge} ${c.badgeText}`}>
-        {symbol}
+        <p className="mt-1.5 text-xl font-semibold text-slate-900">
+          {symbol}
+          {safeAmount.toLocaleString("es-ES", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+        <p className="mt-1 text-[11px] text-slate-500">Saldo disponible</p>
       </div>
     </div>
-  )
+  );
 }
