@@ -16,13 +16,14 @@ const HOURS = Array.from(
   (_, index) => `${index.toString().padStart(2, "0")}:00`,
 );
 
-type CurrencyKey = "EUR" | "USD" | "BRL" | "USDT";
+type CurrencyKey = "EUR" | "USD" | "BRL" | "USDT" | "ARS";
 
 const currencyMeta: Record<CurrencyKey, { label: string; color: string }> = {
   EUR: { label: "€ EUR", color: "#3b82f6" },
   USD: { label: "$ USD", color: "#22c55e" },
   BRL: { label: "R$ BRL", color: "#eab308" },
   USDT: { label: "₮ USDT", color: "#a855f7" },
+  ARS: { label: "$AR ARS", color: "#ef4444" },
 };
 
 const tooltipFormatter = new Intl.NumberFormat("es-ES", {
@@ -152,6 +153,7 @@ const mergeSnapshotsWithHours = (
       USD: 0,
       BRL: 0,
       USDT: 0,
+      ARS: 0,
       hasData: false,
     };
   });

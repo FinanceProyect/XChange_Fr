@@ -29,6 +29,7 @@ export default function Settings() {
 
   const backendData = data as
     | {
+        saldoPesos: number;
         saldoEur: number;
         saldoUsd: number;
         saldoBrl: number;
@@ -57,7 +58,7 @@ export default function Settings() {
     setDefaultWallet(backendData.carteraDefecto);
     setLanguage(backendData.idioma);
     setBalances({
-      ARS: backendData.saldoArs?.toString() ?? "0",
+      ARS: backendData.saldoPesos?.toString(),
       EUR: backendData.saldoEur.toString(),
       USD: backendData.saldoUsd.toString(),
       BRL: backendData.saldoBrl.toString(),
@@ -69,7 +70,7 @@ export default function Settings() {
     setBalances((prev) => ({ ...prev, [id]: value }));
 
   const buildPayload = () => ({
-    saldoArs: parseFloat(balances.ARS || "0"),
+    saldoPesos: parseFloat(balances.ARS || "0"),
     saldoEur: parseFloat(balances.EUR || "0"),
     saldoUsd: parseFloat(balances.USD || "0"),
     saldoBrl: parseFloat(balances.BRL || "0"),
