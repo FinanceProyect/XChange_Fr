@@ -13,15 +13,14 @@ export default function Operations() {
   const { data: remoteBalances } = useDashboardCurrencyBalances();
   // Lógica similar a Dashboard para determinar si el saldo está configurado
   const balances = Array.isArray(remoteBalances) ? remoteBalances : [];
-  const totalFromCards = balances.reduce((acc, balance) => {
-    const amount =
-      typeof balance.amount === "number"
-        ? balance.amount
-        : Number(balance.amount ?? 0);
-    if (Number.isNaN(amount)) return acc;
-    return acc + amount;
-  }, 0);
-  const showBalanceAlert = balances.length === 0 || totalFromCards <= 0;
+  // totalFromCards eliminado porque ya no se usa
+  // Mostrar overlay solo si todos los saldos están en cero y balances no está vacío
+  const showBalanceAlert =
+    balances.length > 0 &&
+    balances.every(
+      (b) =>
+        (typeof b.amount === "number" ? b.amount : Number(b.amount ?? 0)) === 0,
+    );
   const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [currency, setCurrency] = useState<OperationCurrency | "">("");

@@ -8,7 +8,7 @@ export const getStats = async () => {
 
 export const getCurrencyBalances = async () => {
   const response = await apiClient.get("/balance")
-  return response.data
+  return response.data.balances
 }
 
 export const getBalanceSnapshots = async (fecha: string) => {
