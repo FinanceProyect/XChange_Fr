@@ -28,6 +28,7 @@ export interface BackendBalanceSnapshot {
   usd?: unknown;
   BRL?: unknown;
   USDT?: unknown;
+  ars?: unknown;
   fecha?: unknown;
 }
 
@@ -39,6 +40,7 @@ export interface BalanceSnapshotPoint {
   USD: number;
   BRL: number;
   USDT: number;
+  ARS: number;
 }
 
 const toBalanceSnapshotPoint = (
@@ -49,6 +51,7 @@ const toBalanceSnapshotPoint = (
   const usd = toNumber(snapshot.USD ?? snapshot.usd);
   const brl = toNumber(snapshot.BRL);
   const usdt = toNumber(snapshot.USDT);
+  const ars = toNumber(snapshot.ars) ?? 0;
   const fecha = typeof snapshot.fecha === "string" ? snapshot.fecha : null;
 
   if (
@@ -70,6 +73,7 @@ const toBalanceSnapshotPoint = (
     USD: usd,
     BRL: brl,
     USDT: usdt,
+    ARS: ars,
   };
 };
 

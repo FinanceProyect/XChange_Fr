@@ -8,6 +8,7 @@ import {
 import Toast from "../components/ui/Toast";
 
 const currencyLabels: Record<string, string> = {
+  ARS: "Peso Argentino (ARS)",
   EUR: "Euros (EUR)",
   USD: "Dólares (USD)",
   BRL: "Reales Brasileños (BRL)",
@@ -15,6 +16,7 @@ const currencyLabels: Record<string, string> = {
 };
 
 const currencySymbols: Record<string, string> = {
+  ARS: "$AR",
   EUR: "€",
   USD: "$",
   BRL: "R$",
@@ -27,6 +29,7 @@ export default function Settings() {
 
   const backendData = data as
     | {
+        saldoPesos: number;
         saldoEur: number;
         saldoUsd: number;
         saldoBrl: number;
@@ -55,6 +58,7 @@ export default function Settings() {
     setDefaultWallet(backendData.carteraDefecto);
     setLanguage(backendData.idioma);
     setBalances({
+      ARS: backendData.saldoPesos?.toString(),
       EUR: backendData.saldoEur.toString(),
       USD: backendData.saldoUsd.toString(),
       BRL: backendData.saldoBrl.toString(),
@@ -66,6 +70,7 @@ export default function Settings() {
     setBalances((prev) => ({ ...prev, [id]: value }));
 
   const buildPayload = () => ({
+    saldoPesos: parseFloat(balances.ARS || "0"),
     saldoEur: parseFloat(balances.EUR || "0"),
     saldoUsd: parseFloat(balances.USD || "0"),
     saldoBrl: parseFloat(balances.BRL || "0"),
@@ -124,7 +129,10 @@ export default function Settings() {
               </h2>
             </div>
             <div className="flex flex-col gap-3">
-              {currencyBalances.map(({ currency }) => (
+              {[
+                ...currencyBalances.filter((b) => b.currency === "ARS"),
+                ...currencyBalances.filter((b) => b.currency !== "ARS"),
+              ].map(({ currency }) => (
                 <div key={currency}>
                   <label className="text-xs text-gray-500 mb-1 block">
                     {currencyLabels[currency]}

@@ -1,10 +1,12 @@
 // ── Saldos por moneda (compartido entre Settings y Dashboard) ──
 export const currencyBalances = [
-  { currency: 'EUR',  symbol: '€',  amount: 24580 },
   { currency: 'USD',  symbol: '$',  amount: 18450 },
-  { currency: 'BRL',  symbol: 'R$', amount: 3000  },
+  { currency: 'EUR',  symbol: '€',  amount: 24580 },
   { currency: 'USDT', symbol: '₮',  amount: 750   },
+  { currency: 'BRL',  symbol: 'R$', amount: 3000  },
+  { currency: 'ARS',  symbol: '$AR', amount: 0 },
 ]
+
 
 // ── Serie temporal diaria de cartera (últimos 14 días) ──────
 export const portfolioSeriesData = [

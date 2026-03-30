@@ -1,24 +1,45 @@
-import { useState } from 'react'
-import { Plus } from 'lucide-react'
-import DebtorsTable from '../components/debtors/DebtorsTable'
-import AddDebtorModal from '../components/debtors/AddDebtorModal'
-import Toast from '../components/ui/Toast'
+// import { useNavigate } from "react-router-dom"; // Eliminado porque no se usa
+import { useDashboardCurrencyBalances } from "../queries/dashboard.query";
+import { useState } from "react";
+import { Plus } from "lucide-react";
+import DebtorsTable from "../components/debtors/DebtorsTable";
+import AddDebtorModal from "../components/debtors/AddDebtorModal";
+
+import BalanceAlertOverlay from "../components/ui/BalanceAlertOverlay";
+import Toast from "../components/ui/Toast";
 
 export default function Debtors() {
-  const [showModal, setShowModal] = useState(false)
-  const [showToast, setShowToast] = useState(false)
+  // useNavigate eliminado porque ya no se usa
+  const { data: remoteBalances } = useDashboardCurrencyBalances();
+  const balances = Array.isArray(remoteBalances) ? remoteBalances : [];
+  // totalFromCards eliminado porque ya no se usa
+  // Mostrar overlay solo si todos los saldos están en cero y balances no está vacío
+  const showBalanceAlert =
+    balances.length > 0 &&
+    balances.every(
+      (b) =>
+        (typeof b.amount === "number" ? b.amount : Number(b.amount ?? 0)) === 0,
+    );
+  const [showModal, setShowModal] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const handleSave = () => {
-    setShowToast(true)
-  }
+    setShowToast(true);
+  };
 
   return (
     <div className="bg-gray-50 px-5 py-5 lg:px-8 lg:py-6">
+      {/* Overlay de saldo sin configurar */}
+      {showBalanceAlert && <BalanceAlertOverlay />}
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-xl lg:text-2xl font-bold text-gray-900">Deudores</h1>
-          <p className="text-xs lg:text-sm text-gray-500 mt-1">Seguimiento y gestión de deudas pendientes</p>
+          <h1 className="text-xl lg:text-2xl font-bold text-gray-900">
+            Deudores
+          </h1>
+          <p className="text-xs lg:text-sm text-gray-500 mt-1">
+            Seguimiento y gestión de deudas pendientes
+          </p>
         </div>
         <button
           onClick={() => setShowModal(true)}
@@ -45,5 +66,5 @@ export default function Debtors() {
         />
       )}
     </div>
-  )
+  );
 }

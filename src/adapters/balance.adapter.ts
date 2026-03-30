@@ -10,6 +10,7 @@ export interface CurrencyBalanceCard {
 }
 
 const symbolMap: Record<string, string> = {
+  ARS: "$AR",
   EUR: "€",
   USD: "$",
   BRL: "R$",
