@@ -82,8 +82,6 @@ export default function OperationsTable({ currency, type }: OperationsTableProps
               {rows.map((op) => {
                 const sym      = currencySymbol[op.currency]
                 const isMetal  = op.currency === 'METAL'
-                const profit   = ((op.sellPrice - op.buyPrice) * op.amount).toFixed(2)
-                const isUp     = parseFloat(profit) >= 0
 
                 return (
                   <tr key={op.id} className="h-14 align-middle border-b border-gray-50 hover:bg-gray-50 transition-colors">

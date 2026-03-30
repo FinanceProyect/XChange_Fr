@@ -18,7 +18,7 @@ export default function MarkAsPaidButton({
   useEffect(() => {
     if (!open) return;
 
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: globalThis.MouseEvent) => {
       if (
         containerRef.current &&
         !containerRef.current.contains(event.target as Node)

@@ -10,7 +10,7 @@ export default function GlobalToastHost() {
       setToast(event);
     });
 
-    return unsubscribe;
+    return () => { unsubscribe(); };
   }, []);
 
   if (!toast) return null;

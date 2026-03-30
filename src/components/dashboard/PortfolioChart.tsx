@@ -6,7 +6,6 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-  type TooltipProps,
 } from "recharts";
 import type { BalanceSnapshotPoint } from "../../adapters/balanceSnapshot.adapter";
 import { useBalanceSnapshots } from "../../queries/dashboard.query";
@@ -88,7 +87,12 @@ const getAxisConfig = (points: BalanceSnapshotPoint[]) => {
   } as const;
 };
 
-const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{ payload: BalanceSnapshotPoint }>;
+}
+
+const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   if (!active || !payload || payload.length === 0) return null;
   const point = payload[0].payload as BalanceSnapshotPoint;
 

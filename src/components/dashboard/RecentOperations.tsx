@@ -4,17 +4,19 @@ import type { OperationCurrency, Operation } from '../../data/mockData'
 import { operacionToFrontend, type BackendOperacion } from '../../adapters/operaciones.adapter'
 
 const currencySymbol: Record<OperationCurrency, string> = {
-  EUR:  '€',
-  USD:  '$',
-  BRL:  'R$',
-  USDT: '₮',
+  EUR:   '€',
+  USD:   '$',
+  BRL:   'R$',
+  USDT:  '₮',
+  METAL: 'Oro',
 }
 
 const currencyColors: Record<OperationCurrency, string> = {
-  EUR:  'bg-blue-100 text-blue-700',
-  USD:  'bg-green-100 text-green-700',
-  BRL:  'bg-yellow-100 text-yellow-700',
-  USDT: 'bg-purple-100 text-purple-700',
+  EUR:   'bg-blue-100 text-blue-700',
+  USD:   'bg-green-100 text-green-700',
+  BRL:   'bg-yellow-100 text-yellow-700',
+  USDT:  'bg-purple-100 text-purple-700',
+  METAL: 'bg-amber-100 text-amber-700',
 }
 
 const RECENT_LIMIT = 6
