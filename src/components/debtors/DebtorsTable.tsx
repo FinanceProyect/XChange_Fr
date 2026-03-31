@@ -56,16 +56,7 @@ export default function DebtorsTable() {
   };
 
   const handleMarkAsPaid = (debtor: Debtor) => {
-    const document = debtor.document?.trim();
     const amountValue = parseAmount(debtor.amount ?? "");
-
-    if (!document) {
-      showToast({
-        message: "El deudor no tiene documento para registrar el pago",
-        variant: "error",
-      });
-      return;
-    }
 
     if (amountValue <= 0) {
       showToast({
@@ -78,7 +69,7 @@ export default function DebtorsTable() {
     setPayingId(debtor.id);
 
     pagarDeudor(
-      { documento: document, importe: amountValue },
+      { id: debtor.id, importe: amountValue },
       {
         onSuccess: (updated) => {
           const nextState = (
@@ -130,10 +121,9 @@ export default function DebtorsTable() {
               <colgroup>
                 <col className="w-[110px]" />
                 <col className="w-[90px]" />
-                <col className="w-[220px]" />
+                <col className="w-[260px]" />
                 <col className="w-[150px]" />
-                <col className="w-[130px]" />
-                <col className="w-[140px]" />
+                <col className="w-[150px]" />
                 <col className="w-[80px]" />
               </colgroup>
               <thead>
@@ -141,7 +131,6 @@ export default function DebtorsTable() {
                   <th className="text-left py-2 font-medium">Fecha</th>
                   <th className="text-left py-2 font-medium">Hora</th>
                   <th className="text-left py-2 font-medium">Nombre</th>
-                  <th className="text-left py-2 font-medium">Documento</th>
                   <th className="text-left py-2 font-medium">Importe</th>
                   <th className="text-left py-2 font-medium pl-6">Estado</th>
                   <th className="py-2 font-medium" />
@@ -177,9 +166,6 @@ export default function DebtorsTable() {
                         </span>
                       </div>
                     </td>
-                    <td className="py-3 text-gray-600">
-                      {debtor.document ?? "—"}
-                    </td>
                     <td className="py-3 font-medium text-green-600">
                       {debtor.amount || "—"}
                     </td>
@@ -210,7 +196,7 @@ export default function DebtorsTable() {
                       className="h-14 align-middle border-b border-gray-50"
                       aria-hidden
                     >
-                      <td className="py-3" colSpan={7}>
+                      <td className="py-3" colSpan={6}>
                         <span className="opacity-0">placeholder</span>
                       </td>
                     </tr>

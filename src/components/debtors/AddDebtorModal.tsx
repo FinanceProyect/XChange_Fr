@@ -4,11 +4,10 @@ import { useCreateDeudor } from "../../queries/deudores.query";
 
 interface FormState {
   nombre: string;
-  documento: string;
   importe: string;
 }
 
-const EMPTY: FormState = { nombre: "", documento: "", importe: "" };
+const EMPTY: FormState = { nombre: "", importe: "" };
 
 interface AddDebtorModalProps {
   onClose: () => void;
@@ -40,7 +39,6 @@ export default function AddDebtorModal({
 
   const isValid =
     form.nombre.trim() !== "" &&
-    form.documento.trim() !== "" &&
     form.importe !== "";
 
   const set = (field: keyof FormState, value: string) =>
@@ -51,9 +49,8 @@ export default function AddDebtorModal({
     createDeudor(
       {
         nombre: form.nombre,
-        documento: form.documento,
         importe: parseFloat(form.importe),
-        fechaHora: formatLocalDateTime(),
+        fecha: formatLocalDateTime(),
       },
       {
         onSuccess: () => {
@@ -96,20 +93,6 @@ export default function AddDebtorModal({
               placeholder="Nombre completo"
               value={form.nombre}
               onChange={(e) => set("nombre", e.target.value)}
-              className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Documento */}
-          <div>
-            <label className="text-xs text-gray-500 mb-1 block">
-              Documento
-            </label>
-            <input
-              type="text"
-              placeholder="DNI / NIE / Pasaporte"
-              value={form.documento}
-              onChange={(e) => set("documento", e.target.value)}
               className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
