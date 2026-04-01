@@ -20,8 +20,8 @@ export const update = async (id: string, data: unknown) => {
   return response.data
 }
 
-export const pagar = async (data: { documento: string; importe: number }) => {
-  const response = await apiClient.put("/deudores/pagar", data)
+export const pagar = async (id: string, importe: number) => {
+  const response = await apiClient.put("/deudores/pagar", { id, importe })
   return response.data
 }
 
@@ -33,5 +33,10 @@ export const remove = async (id: string) => {
 // Extiende la fecha de vencimiento de la deuda — PUT /deudores/{id}/extender
 export const extenderFecha = async (id: string, nuevaFecha: string) => {
   const response = await apiClient.put(`/deudores/${id}/extender`, { nuevaFecha })
+  return response.data
+}
+
+export const getSugerencias = async (nombre: string) => {
+  const response = await apiClient.get("/deudores/sugerencias", { params: { nombre } })
   return response.data
 }

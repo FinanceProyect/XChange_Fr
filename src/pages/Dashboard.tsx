@@ -6,66 +6,51 @@ import RecentOperations from "../components/dashboard/RecentOperations";
 import { totalBalanceCard } from "../data/mockData";
 import {
   useDashboardStats,
-  useDashboardCurrencyBalances,
+  useBalanceSummary,
 } from "../queries/dashboard.query";
 import type { BackendOperacion } from "../adapters/operaciones.adapter";
+import { balancesResponseToCards } from "../adapters/balance.adapter";
 
 interface DashboardStats {
-  totalBalanceTrend: string;
-  trendUp: boolean;
   recentOperations: BackendOperacion[];
+  balanceTotal?: number;
 }
 
 export default function Dashboard() {
-  const { data } = useDashboardStats();
-  const { data: remoteBalances } = useDashboardCurrencyBalances();
-  const stats = data as DashboardStats | undefined;
+  const { data: statsData } = useDashboardStats();
+  const stats = statsData as DashboardStats | undefined;
 
-  // Solo usar datos reales del backend
-  const baseBalances =
-    Array.isArray(remoteBalances) && remoteBalances.length > 0
-      ? remoteBalances
-      : [];
+  // Usar el nuevo hook para obtener balances y balanceTotal
+  const { data: balanceSummary } = useBalanceSummary();
+  // Adaptar balances del backend al formato esperado por las cards
+  const balances = Array.isArray(balanceSummary?.balances)
+    ? balancesResponseToCards(balanceSummary.balances)
+    : [];
+  const balanceTotal =
+    typeof balanceSummary?.balanceTotal === "number"
+      ? balanceSummary.balanceTotal
+      : undefined;
 
-  // Orden personalizado: ARS, USD, EUR, USDT, BRL (ARS siempre primero si existe)
-  const currencyOrder = ["ARS", "USD", "EUR", "USDT", "BRL"];
-  // Solo mostrar las monedas que devuelve el backend (o mocks si no hay datos)
-  const balances = baseBalances.slice().sort((a, b) => {
-    const idxA = currencyOrder.indexOf(a.currency);
-    const idxB = currencyOrder.indexOf(b.currency);
-    return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
-  });
+  // Mostrar balanceTotal del backend directamente
+  const totalBalanceValue =
+    typeof balanceTotal === "number"
+      ? `$${balanceTotal.toLocaleString("es-ES", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`
+      : totalBalanceCard.value;
 
-  const totalFromCards = balances.reduce((acc, balance) => {
-    const amount =
-      typeof balance.amount === "number"
-        ? balance.amount
-        : Number(balance.amount ?? 0);
-    if (Number.isNaN(amount)) return acc;
-    return acc + amount;
-  }, 0);
-
-  const totalFromCardsValue = balances.length
-    ? `$${totalFromCards.toLocaleString("es-ES", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })}`
-    : undefined;
   const totalCard = {
     ...totalBalanceCard,
-    value: totalFromCardsValue ?? totalBalanceCard.value,
-    trend: stats?.totalBalanceTrend ?? totalBalanceCard.trend,
-    trendUp: stats?.trendUp ?? totalBalanceCard.trendUp,
+    value: totalBalanceValue,
   };
 
-  // Mostrar overlay solo si todos los saldos están en cero y balances no está vacío
+  // Mostrar overlay solo si balances NO está vacío y TODOS los saldos están en cero
+  // Mostrar overlay solo si balances NO está vacío y TODOS los saldos están en cero
   const showBalanceAlert =
-    Array.isArray(remoteBalances) &&
-    remoteBalances.length > 0 &&
-    remoteBalances.every(
-      (b) =>
-        (typeof b.amount === "number" ? b.amount : Number(b.amount ?? 0)) === 0,
-    );
+    Array.isArray(balances) &&
+    balances.length > 0 &&
+    balances.every((b) => b.amount === 0);
 
   return (
     <div className="bg-gray-50 px-5 py-5 lg:px-8 lg:py-6">

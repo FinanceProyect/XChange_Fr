@@ -1,5 +1,17 @@
+// Nuevo hook para obtener el objeto completo de /balance
+import { useQuery } from "@tanstack/react-query";
+import { getCurrencyBalances as getBalanceSummary } from "../services/dashboard.service";
+
+export const useBalanceSummary = () => {
+  return useQuery({
+    queryKey: ["dashboard", "balance-summary"],
+    queryFn: async () => {
+      // getCurrencyBalances retorna el objeto completo (balances y balanceTotal)
+      return await getBalanceSummary(true);
+    },
+  });
+};
 import { useEffect } from "react"
-import { useQuery } from "@tanstack/react-query"
 import { balancesResponseToCards } from "../adapters/balance.adapter"
 import { balanceSnapshotsResponseToPoints } from "../adapters/balanceSnapshot.adapter"
 import {

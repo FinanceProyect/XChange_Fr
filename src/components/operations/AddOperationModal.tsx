@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import type { OperationType, OperationCurrency } from "../../data/mockData";
 import { useCreateOperacion } from "../../queries/operaciones.query";
+import DebtorAutocomplete from "../debtors/DebtorAutocomplete";
 
 const QUILATAJE_OPTIONS = ["8k", "9k", "10k", "14k", "18k", "22k", "24k"];
 
@@ -14,7 +15,7 @@ interface FormState {
   peso: string;
   addDebtor: boolean;
   debtorName: string;
-  debtorDocument: string;
+  debtorId: string | null;
 }
 
 const EMPTY: FormState = {
@@ -26,7 +27,7 @@ const EMPTY: FormState = {
   peso: "",
   addDebtor: false,
   debtorName: "",
-  debtorDocument: "",
+  debtorId: null,
 };
 
 interface AddOperationModalProps {
@@ -74,7 +75,7 @@ export default function AddOperationModal({
 
   const debtorValid =
     !form.addDebtor ||
-    (form.debtorName.trim() !== "" && form.debtorDocument.trim() !== "");
+    form.debtorName.trim() !== "";
 
   const isValid = baseValid && metalValid && debtorValid;
 
@@ -99,7 +100,7 @@ export default function AddOperationModal({
         ...prev,
         addDebtor: nextAdd,
         debtorName: nextAdd ? prev.debtorName : "",
-        debtorDocument: nextAdd ? prev.debtorDocument : "",
+        debtorId: nextAdd ? prev.debtorId : null,
       };
     });
 
@@ -109,7 +110,7 @@ export default function AddOperationModal({
       type: t,
       addDebtor: t === "Venta" ? prev.addDebtor : false,
       debtorName: t === "Venta" ? prev.debtorName : "",
-      debtorDocument: t === "Venta" ? prev.debtorDocument : "",
+      debtorId: t === "Venta" ? prev.debtorId : null,
     }));
 
   const handleSave = () => {
@@ -132,7 +133,10 @@ export default function AddOperationModal({
 
     if (form.addDebtor && form.type === "Venta") {
       payload.nombre = form.debtorName.trim();
-      payload.documento = form.debtorDocument.trim();
+      payload.fecha = formatLocalDateTime();
+      if (form.debtorId) {
+        payload.id = form.debtorId;
+      }
     }
 
     createOperacion(payload, {
@@ -337,7 +341,7 @@ export default function AddOperationModal({
               </p>
               <p className="text-xs text-gray-500">
                 {form.type === "Venta"
-                  ? "Activa para registrar nombre y documento"
+                  ? "Activa para registrar el nombre del deudor"
                   : "Solo disponible para una venta"}
               </p>
             </div>
@@ -361,41 +365,18 @@ export default function AddOperationModal({
             </button>
           </div>
 
-          <div className="grid grid-cols-1 gap-3">
-            <div>
-              <label className="text-xs text-gray-500 mb-1 block">
-                Nombre del deudor
-              </label>
-              <input
-                type="text"
-                value={form.debtorName}
-                disabled={!form.addDebtor || form.type !== "Venta"}
-                onChange={(e) => set("debtorName", e.target.value)}
-                className={`w-full text-sm border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-                  form.addDebtor
-                    ? "border-gray-200 text-gray-700 bg-white"
-                    : "border-gray-100 bg-gray-100 text-gray-400 cursor-not-allowed"
-                }`}
-                placeholder="Nombre y apellido"
-              />
-            </div>
-            <div>
-              <label className="text-xs text-gray-500 mb-1 block">
-                Documento
-              </label>
-              <input
-                type="text"
-                value={form.debtorDocument}
-                disabled={!form.addDebtor || form.type !== "Venta"}
-                onChange={(e) => set("debtorDocument", e.target.value)}
-                className={`w-full text-sm border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-                  form.addDebtor
-                    ? "border-gray-200 text-gray-700 bg-white"
-                    : "border-gray-100 bg-gray-100 text-gray-400 cursor-not-allowed"
-                }`}
-                placeholder="DNI / Pasaporte"
-              />
-            </div>
+          <div>
+            <label className="text-xs text-gray-500 mb-1 block">
+              Nombre del deudor
+            </label>
+            <DebtorAutocomplete
+              nombre={form.debtorName}
+              selectedId={form.debtorId}
+              disabled={!form.addDebtor || form.type !== "Venta"}
+              onChange={(nombre, id) =>
+                setForm((prev) => ({ ...prev, debtorName: nombre, debtorId: id }))
+              }
+            />
           </div>
         </div>
 

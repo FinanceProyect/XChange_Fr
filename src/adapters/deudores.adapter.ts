@@ -4,7 +4,6 @@ import type { Debtor } from '../data/mockData'
 export interface BackendDeudor {
   id: string
   nombre: string
-  documento: string
   fecha: string
   importe: number | null
   estado?: string
@@ -34,7 +33,6 @@ export function deudorToFrontend(deudor: BackendDeudor): Debtor {
     id:     deudor.id,
     name:   deudor.nombre,
     avatar: buildAvatar(deudor.nombre),
-    document: deudor.documento,
     date:   deudor.fecha,
     amount: deudor.importe === null || deudor.importe === undefined ? '' : String(deudor.importe),
     status: normalizedStatus,

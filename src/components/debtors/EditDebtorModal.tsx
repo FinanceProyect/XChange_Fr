@@ -6,7 +6,6 @@ import { showToast } from "../../lib/toastBus";
 
 interface FormState {
   nombre: string;
-  documento: string;
   importe: string;
 }
 
@@ -23,7 +22,6 @@ export default function EditDebtorModal({
 }: EditDebtorModalProps) {
   const [form, setForm] = useState<FormState>({
     nombre: debtor.name,
-    documento: debtor.document ?? "",
     importe: "",
   });
 
@@ -32,7 +30,6 @@ export default function EditDebtorModal({
   const importeNumber = parseFloat(form.importe);
   const isValid =
     form.nombre.trim() !== "" &&
-    form.documento.trim() !== "" &&
     form.importe.trim() !== "" &&
     !Number.isNaN(importeNumber) &&
     importeNumber > 0;
@@ -45,7 +42,7 @@ export default function EditDebtorModal({
 
     pagarDeudor(
       {
-        documento: form.documento.trim(),
+        id: debtor.id,
         importe: importeNumber,
       },
       {
@@ -108,19 +105,6 @@ export default function EditDebtorModal({
               type="text"
               value={form.nombre}
               onChange={(e) => set("nombre", e.target.value)}
-              className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Documento */}
-          <div>
-            <label className="text-xs text-gray-500 mb-1 block">
-              Documento
-            </label>
-            <input
-              type="text"
-              value={form.documento}
-              onChange={(e) => set("documento", e.target.value)}
               className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
