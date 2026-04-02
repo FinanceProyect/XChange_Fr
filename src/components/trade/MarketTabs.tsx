@@ -27,14 +27,14 @@ export default function MarketTabs({ active, onChange }: MarketTabsProps) {
           </button>
         ))}
         <button className="px-4 py-1.5 rounded-md text-sm text-gray-500 hover:bg-gray-100 cursor-pointer transition-colors">
-          More
+          Más
         </button>
       </div>
       <div className="relative">
         <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
         <input
           type="text"
-          placeholder="Search markets..."
+          placeholder="Buscar mercados..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-7 pr-3 py-1.5 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-40"

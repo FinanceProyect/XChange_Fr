@@ -16,12 +16,12 @@ export default function Trade() {
       {/* Page header */}
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h1 className="text-xl lg:text-2xl font-bold text-gray-900">Trading Workspace</h1>
-          <p className="text-xs lg:text-sm text-gray-500 mt-1">Buy and sell assets with real-time market data</p>
+          <h1 className="text-xl lg:text-2xl font-bold text-gray-900">Espacio de trading</h1>
+          <p className="text-xs lg:text-sm text-gray-500 mt-1">Compra y venta de activos con datos de mercado en tiempo real</p>
         </div>
         <div className="flex items-center gap-1.5 text-sm text-green-600 font-medium">
           <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
-          Market Open
+          Mercado abierto
         </div>
       </div>
 

@@ -32,10 +32,10 @@ export default function PriceInfo({ pair }: PriceInfoProps) {
           </div>
         </div>
         <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-xs text-gray-500">
-          <div><span className="text-gray-400">24h High</span><p className="text-gray-800 font-medium">{data.high}</p></div>
-          <div><span className="text-gray-400">24h Low</span><p className="text-gray-800 font-medium">{data.low}</p></div>
-          <div><span className="text-gray-400">24h Volume</span><p className="text-gray-800 font-medium">{data.volume}</p></div>
-          <div><span className="text-gray-400">Market Cap</span><p className="text-gray-800 font-medium">{data.cap}</p></div>
+          <div><span className="text-gray-400">Máx. 24h</span><p className="text-gray-800 font-medium">{data.high}</p></div>
+          <div><span className="text-gray-400">Mín. 24h</span><p className="text-gray-800 font-medium">{data.low}</p></div>
+          <div><span className="text-gray-400">Volumen 24h</span><p className="text-gray-800 font-medium">{data.volume}</p></div>
+          <div><span className="text-gray-400">Cap. de mercado</span><p className="text-gray-800 font-medium">{data.cap}</p></div>
         </div>
       </div>
     </div>

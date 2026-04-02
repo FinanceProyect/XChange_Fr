@@ -88,3 +88,71 @@ export const balanceSnapshotsResponseToPoints = (
       (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
     );
 };
+
+export interface ChartPoint {
+  label: string;
+  total: number | null;
+}
+
+const padDate = (n: number) => `${n}`.padStart(2, "0");
+
+const toDayLabel = (isoDate: string): string => {
+  const d = new Date(isoDate);
+  if (Number.isNaN(d.getTime())) return isoDate;
+  return `${padDate(d.getDate())}/${padDate(d.getMonth() + 1)}`;
+};
+
+const toMonthLabel = (isoDate: string): string => {
+  const d = new Date(isoDate);
+  if (Number.isNaN(d.getTime())) return isoDate;
+  return d.toLocaleString("es-ES", { month: "short" });
+};
+
+export const buildDailyPoints = (
+  entries: { date: string; snapshots: BalanceSnapshotPoint[] }[],
+): ChartPoint[] => {
+  return entries
+    .map(({ date, snapshots }) => {
+      if (!snapshots.length) return null;
+      const last = snapshots[snapshots.length - 1];
+      return { label: toDayLabel(date), total: last.total };
+    })
+    .filter((p): p is ChartPoint => p !== null);
+};
+
+export const buildMonthlyPoints = (
+  entries: { date: string; snapshots: BalanceSnapshotPoint[] }[],
+): ChartPoint[] => {
+  const byMonth = new Map<string, ChartPoint>();
+  for (const { date, snapshots } of entries) {
+    if (!snapshots.length) continue;
+    const last = snapshots[snapshots.length - 1];
+    const monthKey = date.slice(0, 7); // "YYYY-MM"
+    byMonth.set(monthKey, { label: toMonthLabel(date), total: last.total });
+  }
+  return Array.from(byMonth.values());
+};
+
+export const buildHourlyGridPoints = (
+  snapshots: BalanceSnapshotPoint[],
+): ChartPoint[] => {
+  const slotMap = new Map<string, number>();
+  for (const s of snapshots) {
+    const d = new Date(s.timestamp);
+    if (Number.isNaN(d.getTime())) continue;
+    const totalMinutes = d.getHours() * 60 + d.getMinutes();
+    const roundedMinutes = Math.min(Math.round(totalMinutes / 15) * 15, 23 * 60 + 45);
+    const hh = `${Math.floor(roundedMinutes / 60)}`.padStart(2, "0");
+    const mm = `${roundedMinutes % 60}`.padStart(2, "0");
+    slotMap.set(`${hh}:${mm}`, s.total);
+  }
+  const points: ChartPoint[] = [];
+  for (let slot = 0; slot < 96; slot++) {
+    const totalMinutes = slot * 15;
+    const hh = `${Math.floor(totalMinutes / 60)}`.padStart(2, "0");
+    const mm = `${totalMinutes % 60}`.padStart(2, "0");
+    const label = `${hh}:${mm}`;
+    points.push({ label, total: slotMap.get(label) ?? null });
+  }
+  return points;
+};

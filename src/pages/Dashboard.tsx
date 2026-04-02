@@ -6,10 +6,9 @@ import RecentOperations from "../components/dashboard/RecentOperations";
 import { totalBalanceCard } from "../data/mockData";
 import {
   useDashboardStats,
-  useBalanceSummary,
+  useDashboardCurrencyBalances,
 } from "../queries/dashboard.query";
 import type { BackendOperacion } from "../adapters/operaciones.adapter";
-import { balancesResponseToCards } from "../adapters/balance.adapter";
 
 interface DashboardStats {
   recentOperations: BackendOperacion[];
@@ -17,23 +16,23 @@ interface DashboardStats {
 }
 
 export default function Dashboard() {
-  const { data: statsData } = useDashboardStats();
-  const stats = statsData as DashboardStats | undefined;
+  const { data } = useDashboardStats();
+  const { data: balancesData } = useDashboardCurrencyBalances();
+  const stats = data as DashboardStats | undefined;
 
-  // Usar el nuevo hook para obtener balances y balanceTotal
-  const { data: balanceSummary } = useBalanceSummary();
-  // Adaptar balances del backend al formato esperado por las cards
-  const balances = Array.isArray(balanceSummary?.balances)
-    ? balancesResponseToCards(balanceSummary.balances)
-    : [];
-  const balanceTotal =
-    typeof balanceSummary?.balanceTotal === "number"
-      ? balanceSummary.balanceTotal
-      : undefined;
+  const baseBalances = balancesData?.cards ?? [];
+  const balanceTotal = balancesData?.balanceTotal;
 
-  // Mostrar balanceTotal del backend directamente
+  // Orden personalizado: ARS, USD, EUR, USDT, BRL (ARS siempre primero si existe)
+  const currencyOrder = ["ARS", "USD", "EUR", "USDT", "BRL"];
+  const balances = baseBalances.slice().sort((a, b) => {
+    const idxA = currencyOrder.indexOf(a.currency);
+    const idxB = currencyOrder.indexOf(b.currency);
+    return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
+  });
+
   const totalBalanceValue =
-    typeof balanceTotal === "number"
+    balanceTotal !== undefined
       ? `$${balanceTotal.toLocaleString("es-ES", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
@@ -46,11 +45,12 @@ export default function Dashboard() {
   };
 
   // Mostrar overlay solo si balances NO está vacío y TODOS los saldos están en cero
-  // Mostrar overlay solo si balances NO está vacío y TODOS los saldos están en cero
   const showBalanceAlert =
-    Array.isArray(balances) &&
-    balances.length > 0 &&
-    balances.every((b) => b.amount === 0);
+    baseBalances.length > 0 &&
+    baseBalances.every(
+      (b) =>
+        (typeof b.amount === "number" ? b.amount : Number(b.amount ?? 0)) === 0,
+    );
 
   return (
     <div className="bg-gray-50 px-5 py-5 lg:px-8 lg:py-6">
@@ -61,7 +61,7 @@ export default function Dashboard() {
             Dashboard
           </h1>
           <p className="text-xs lg:text-sm text-gray-500 mt-1">
-            Welcome back! Here's your financial overview.
+            ¡Bienvenido! Aquí está tu resumen financiero.
           </p>
         </div>
         <div className="mt-3 lg:mt-0 w-full md:max-w-xs lg:max-w-sm">

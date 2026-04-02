@@ -17,7 +17,7 @@ export default function TradeForm() {
             side === 'buy' ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-gray-50'
           }`}
         >
-          Buy
+          Comprar
         </button>
         <button
           onClick={() => setSide('sell')}
@@ -25,12 +25,12 @@ export default function TradeForm() {
             side === 'sell' ? 'bg-red-500 text-white' : 'text-gray-600 hover:bg-gray-50'
           }`}
         >
-          Sell
+          Vender
         </button>
       </div>
 
       {/* Order type */}
-      <p className="text-xs text-gray-500 mb-1.5">Order Type</p>
+      <p className="text-xs text-gray-500 mb-1.5">Tipo de orden</p>
       <div className="flex rounded-lg overflow-hidden border border-gray-200 mb-4">
         {(['market', 'limit'] as const).map((t) => (
           <button
@@ -40,13 +40,13 @@ export default function TradeForm() {
               orderType === t ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
-            {t.charAt(0).toUpperCase() + t.slice(1)}
+            {t === 'market' ? 'Mercado' : 'Límite'}
           </button>
         ))}
       </div>
 
       {/* Amount */}
-      <p className="text-xs text-gray-500 mb-1.5">Amount</p>
+      <p className="text-xs text-gray-500 mb-1.5">Cantidad</p>
       <div className="flex items-center border border-gray-200 rounded-md overflow-hidden mb-2">
         <input
           type="number"
@@ -81,10 +81,10 @@ export default function TradeForm() {
       {/* Summary */}
       <div className="flex flex-col gap-1.5 text-xs mb-4">
         {[
-          { label: 'Available Balance:',  value: '$8,450.00',  color: 'text-gray-800' },
-          { label: 'Trading Fee (0.1%):', value: '$4.36',      color: 'text-gray-800' },
-          { label: 'Est. Total Cost:',    value: '$4,362.61',  color: 'text-gray-800' },
-          { label: 'After Trade Balance:', value: '$4,087.39', color: 'text-gray-800' },
+          { label: 'Saldo disponible:',      value: '$8,450.00',  color: 'text-gray-800' },
+          { label: 'Comisión (0,1%):',       value: '$4.36',      color: 'text-gray-800' },
+          { label: 'Costo total est.:',      value: '$4,362.61',  color: 'text-gray-800' },
+          { label: 'Saldo tras la operación:', value: '$4,087.39', color: 'text-gray-800' },
         ].map(({ label, value, color }) => (
           <div key={label} className="flex justify-between">
             <span className="text-gray-500">{label}</span>
@@ -99,10 +99,10 @@ export default function TradeForm() {
           side === 'buy' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-500 hover:bg-red-600'
         }`}
       >
-        Place {side === 'buy' ? 'Buy' : 'Sell'} Order
+        {side === 'buy' ? 'Colocar orden de compra' : 'Colocar orden de venta'}
       </button>
       <p className="text-center text-xs text-gray-400 mt-2">
-        By placing an order, you agree to our trading terms
+        Al colocar una orden, aceptás nuestros términos de trading
       </p>
     </div>
   )

@@ -28,7 +28,7 @@ export const portfolioSeriesData = [
 
 export const totalBalanceCard = {
   id: 'total-balance',
-  title: 'Total Balance',
+  title: 'Balance total',
   value: '$46,780.00',
   icon: 'wallet',
   iconBg: 'bg-green-100',
@@ -36,10 +36,10 @@ export const totalBalanceCard = {
 }
 
 export const portfolioData = [
-  { name: 'Investments', value: 45, color: '#3b82f6' },
-  { name: 'Cash', value: 25, color: '#1e3a5f' },
-  { name: 'Debts', value: 20, color: '#ef4444' },
-  { name: 'Assets', value: 10, color: '#22c55e' },
+  { name: 'Inversiones', value: 45, color: '#3b82f6' },
+  { name: 'Efectivo',    value: 25, color: '#1e3a5f' },
+  { name: 'Deudas',      value: 20, color: '#ef4444' },
+  { name: 'Activos',     value: 10, color: '#22c55e' },
 ]
 
 
@@ -74,10 +74,10 @@ export const portfolioChartData = [
 ]
 
 export const currenciesData = [
-  { id: 'usd', symbol: '$',  code: 'USD', name: 'US Dollar',  change: '+2.1%', changeUp: true,  value: '$18,450.00',  sub: 'Available: $14,290.00', color: 'bg-green-100',  textColor: 'text-green-700'  },
-  { id: 'eur', symbol: '€',  code: 'EUR', name: 'Euro',       change: '-0.8%', changeUp: false, value: '€2,840.00',   sub: 'Available: €2,840.00',  color: 'bg-blue-100',   textColor: 'text-blue-700'   },
-  { id: 'btc', symbol: '₿',  code: 'BTC', name: 'Bitcoin',    change: '+8.4%', changeUp: true,  value: '0.1248 BTC',  sub: '≈$2,890.00',            color: 'bg-orange-100', textColor: 'text-orange-700' },
-  { id: 'eth', symbol: 'Ξ',  code: 'ETH', name: 'Ethereum',   change: '+3.7%', changeUp: true,  value: '1.85 ETH',    sub: '≈$400.00',              color: 'bg-purple-100', textColor: 'text-purple-700' },
+  { id: 'usd', symbol: '$',  code: 'USD', name: 'Dólar estadounidense', change: '+2.1%', changeUp: true,  value: '$18,450.00',  sub: 'Disponible: $14,290.00', color: 'bg-green-100',  textColor: 'text-green-700'  },
+  { id: 'eur', symbol: '€',  code: 'EUR', name: 'Euro',                change: '-0.8%', changeUp: false, value: '€2,840.00',   sub: 'Disponible: €2,840.00',  color: 'bg-blue-100',   textColor: 'text-blue-700'   },
+  { id: 'btc', symbol: '₿',  code: 'BTC', name: 'Bitcoin',             change: '+8.4%', changeUp: true,  value: '0.1248 BTC',  sub: '≈$2,890.00',             color: 'bg-orange-100', textColor: 'text-orange-700' },
+  { id: 'eth', symbol: 'Ξ',  code: 'ETH', name: 'Ethereum',            change: '+3.7%', changeUp: true,  value: '1.85 ETH',    sub: '≈$400.00',               color: 'bg-purple-100', textColor: 'text-purple-700' },
 ]
 
 export interface AccountRow {
@@ -92,10 +92,10 @@ export interface AccountRow {
 }
 
 export const accountsData: AccountRow[] = [
-  { id: 1, account: 'Trading Account',    icon: '📈', iconBg: 'bg-blue-100',   currency: 'USD', available: '$8,450.00',   locked: '$2,100.00',    total: '$10,550.00'  },
-  { id: 2, account: 'Savings Account',    icon: '💰', iconBg: 'bg-green-100',  currency: 'USD', available: '$5,840.00',   locked: '$0.00',        total: '$5,840.00'   },
-  { id: 3, account: 'Crypto Wallet',      icon: '🔐', iconBg: 'bg-orange-100', currency: 'BTC', available: '0.1048 BTC',  locked: '0.0200 BTC',   total: '0.1248 BTC'  },
-  { id: 4, account: 'Investment Account', icon: '📊', iconBg: 'bg-purple-100', currency: 'EUR', available: '€2,840.00',   locked: '€0.00',        total: '€2,840.00'   },
+  { id: 1, account: 'Cuenta de trading',   icon: '📈', iconBg: 'bg-blue-100',   currency: 'USD', available: '$8,450.00',   locked: '$2,100.00',    total: '$10,550.00'  },
+  { id: 2, account: 'Cuenta de ahorros',  icon: '💰', iconBg: 'bg-green-100',  currency: 'USD', available: '$5,840.00',   locked: '$0.00',        total: '$5,840.00'   },
+  { id: 3, account: 'Billetera cripto',   icon: '🔐', iconBg: 'bg-orange-100', currency: 'BTC', available: '0.1048 BTC',  locked: '0.0200 BTC',   total: '0.1248 BTC'  },
+  { id: 4, account: 'Cuenta de inversión',icon: '📊', iconBg: 'bg-purple-100', currency: 'EUR', available: '€2,840.00',   locked: '€0.00',        total: '€2,840.00'   },
 ]
 
 export type ChangeType = 'deposit' | 'withdrawal' | 'transfer'
@@ -111,9 +111,9 @@ export interface RecentChange {
 }
 
 export const recentChangesData: RecentChange[] = [
-  { id: 1, type: 'deposit',    title: 'Deposit',    subtitle: 'Trading Account • 2 hours ago', amount: '+$1,500.00',  currency: 'USD',     amountUp: true  },
-  { id: 2, type: 'withdrawal', title: 'Withdrawal', subtitle: 'Savings Account • 1 day ago',   amount: '-$800.00',    currency: 'USD',     amountUp: false },
-  { id: 3, type: 'transfer',   title: 'Transfer',   subtitle: 'Crypto Purchase • 2 days ago',  amount: '+0.0248 BTC', currency: 'Bitcoin', amountUp: true  },
+  { id: 1, type: 'deposit',    title: 'Depósito',      subtitle: 'Cuenta de trading • hace 2 horas', amount: '+$1,500.00',  currency: 'USD',     amountUp: true  },
+  { id: 2, type: 'withdrawal', title: 'Retiro',        subtitle: 'Cuenta de ahorros • hace 1 día',   amount: '-$800.00',    currency: 'USD',     amountUp: false },
+  { id: 3, type: 'transfer',   title: 'Transferencia', subtitle: 'Compra cripto • hace 2 días',       amount: '+0.0248 BTC', currency: 'Bitcoin', amountUp: true  },
 ]
 
 // ── Trade ────────────────────────────────────────────────────

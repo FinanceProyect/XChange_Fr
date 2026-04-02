@@ -1,21 +1,21 @@
 const fearGreedValue = 68
 
 const stats = [
-  { label: 'Global Market Cap', value: '$1.84T' },
-  { label: 'BTC Dominance',     value: '46.4%'  },
-  { label: '24h Volume',        value: '$82.5B' },
+  { label: 'Cap. global de mercado', value: '$1.84T' },
+  { label: 'Dominancia BTC',         value: '46.4%'  },
+  { label: 'Volumen 24h',            value: '$82.5B' },
 ]
 
 export default function MarketStats() {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-4">
-      <h2 className="text-sm font-semibold text-gray-800 mb-3">Market Stats</h2>
+      <h2 className="text-sm font-semibold text-gray-800 mb-3">Estadísticas de mercado</h2>
 
       {/* Fear & Greed Index */}
       <div className="mb-4">
         <div className="flex justify-between text-xs mb-1.5">
-          <span className="text-gray-500">Fear &amp; Greed Index</span>
-          <span className="font-semibold text-orange-500">{fearGreedValue} - Greed</span>
+          <span className="text-gray-500">Índice de miedo y codicia</span>
+          <span className="font-semibold text-orange-500">{fearGreedValue} - Codicia</span>
         </div>
         <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
           <div

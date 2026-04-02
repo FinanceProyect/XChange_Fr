@@ -1,27 +1,21 @@
-// Nuevo hook para obtener el objeto completo de /balance
-import { useQuery } from "@tanstack/react-query";
-import { getCurrencyBalances as getBalanceSummary } from "../services/dashboard.service";
-
-export const useBalanceSummary = () => {
-  return useQuery({
-    queryKey: ["dashboard", "balance-summary"],
-    queryFn: async () => {
-      // getCurrencyBalances retorna el objeto completo (balances y balanceTotal)
-      return await getBalanceSummary(true);
-    },
-  });
-};
-import { useEffect } from "react"
-import { balancesResponseToCards } from "../adapters/balance.adapter"
-import { balanceSnapshotsResponseToPoints } from "../adapters/balanceSnapshot.adapter"
+import { useQuery } from "@tanstack/react-query"
+import { balancesApiResponseToResult } from "../adapters/balance.adapter"
+import {
+  balanceSnapshotsResponseToPoints,
+  buildDailyPoints,
+  buildHourlyGridPoints,
+  buildMonthlyPoints,
+  type ChartPoint,
+} from "../adapters/balanceSnapshot.adapter"
 import {
   getBalanceSnapshots,
+  getBalanceSnapshotsForDates,
   getCurrencyBalances,
   getStats,
 } from "../services/dashboard.service"
 
 const ONE_HOUR_MS = 60 * 60 * 1000
-const SNAPSHOT_REFRESH_MINUTE = 2
+const FIFTEEN_MIN_MS = 15 * 60 * 1000
 
 const getUserLocalDateString = () => {
   const now = new Date()
@@ -43,7 +37,7 @@ export const useDashboardCurrencyBalances = () => {
     queryKey: ["dashboard", "balances"],
     queryFn: async () => {
       const response = await getCurrencyBalances()
-      return balancesResponseToCards(response)
+      return balancesApiResponseToResult(response)
     },
   })
 }
@@ -51,59 +45,106 @@ export const useDashboardCurrencyBalances = () => {
 export const useBalanceSnapshots = () => {
   const fecha = getUserLocalDateString()
 
-  const query = useQuery({
+  return useQuery({
     queryKey: ["dashboard", "balance-snapshots", fecha],
     queryFn: async () => {
       const response = await getBalanceSnapshots(fecha)
       return balanceSnapshotsResponseToPoints(response)
     },
     gcTime: ONE_HOUR_MS,
+    refetchInterval: FIFTEEN_MIN_MS,
+  })
+}
+
+const ONE_DAY_MS = 24 * 60 * 60 * 1000
+
+const getDateString = (date: Date): string => {
+  const y = date.getFullYear()
+  const m = `${date.getMonth() + 1}`.padStart(2, "0")
+  const d = `${date.getDate()}`.padStart(2, "0")
+  return `${y}-${m}-${d}`
+}
+
+const getLastNDays = (n: number): string[] => {
+  const today = new Date()
+  return Array.from({ length: n }, (_, i) => {
+    const d = new Date(today)
+    d.setDate(today.getDate() - (n - 1 - i))
+    return getDateString(d)
+  })
+}
+
+const getLastNMonthDates = (n: number): string[] => {
+  const today = new Date()
+  return Array.from({ length: n }, (_, i) => {
+    const d = new Date(today.getFullYear(), today.getMonth() - (n - 1 - i) + 1, 0)
+    if (d > today) return getDateString(today)
+    return getDateString(d)
+  })
+}
+
+export type PortfolioPeriod = "hour" | "day" | "month"
+
+export const usePortfolioChartData = (
+  period: PortfolioPeriod,
+): { data: ChartPoint[]; isLoading: boolean; isFetching: boolean; refetch: () => void } => {
+  const hourQuery = useBalanceSnapshots()
+
+  const dayDates = period === "day" ? getLastNDays(14) : []
+  const dayQuery = useQuery({
+    queryKey: ["portfolio", "day", dayDates[0] ?? "", dayDates[dayDates.length - 1] ?? ""],
+    queryFn: async () => {
+      const responses = await getBalanceSnapshotsForDates(dayDates)
+      const entries = dayDates.map((date, i) => ({
+        date,
+        snapshots: balanceSnapshotsResponseToPoints(responses[i]),
+      }))
+      return buildDailyPoints(entries)
+    },
+    staleTime: ONE_DAY_MS,
+    gcTime: ONE_DAY_MS,
+    enabled: period === "day",
   })
 
-  const { refetch } = query
+  const monthDates = period === "month" ? getLastNMonthDates(12) : []
+  const monthQuery = useQuery({
+    queryKey: ["portfolio", "month", monthDates[0] ?? "", monthDates[monthDates.length - 1] ?? ""],
+    queryFn: async () => {
+      const responses = await getBalanceSnapshotsForDates(monthDates)
+      const entries = monthDates.map((date, i) => ({
+        date,
+        snapshots: balanceSnapshotsResponseToPoints(responses[i]),
+      }))
+      return buildMonthlyPoints(entries)
+    },
+    staleTime: ONE_DAY_MS,
+    gcTime: ONE_DAY_MS,
+    enabled: period === "month",
+  })
 
-  useEffect(() => {
-    if (typeof window === "undefined") return
-
-    let timeoutId: number | null = null
-    let intervalId: number | null = null
-
-    const scheduleNextRun = () => {
-      const now = new Date()
-      const next = new Date(now)
-      next.setSeconds(0, 0)
-
-      const minutePassed =
-        now.getMinutes() > SNAPSHOT_REFRESH_MINUTE ||
-        (now.getMinutes() === SNAPSHOT_REFRESH_MINUTE &&
-          (now.getSeconds() > 0 || now.getMilliseconds() > 0))
-
-      if (minutePassed) {
-        next.setHours(next.getHours() + 1)
-      }
-
-      next.setMinutes(SNAPSHOT_REFRESH_MINUTE, 0, 0)
-      const delay = next.getTime() - now.getTime()
-
-      timeoutId = window.setTimeout(async () => {
-        await refetch()
-        intervalId = window.setInterval(() => {
-          refetch()
-        }, ONE_HOUR_MS)
-      }, delay)
+  if (period === "hour") {
+    const snapshots = hourQuery.data ?? []
+    return {
+      data: buildHourlyGridPoints(snapshots),
+      isLoading: hourQuery.isLoading,
+      isFetching: hourQuery.isFetching,
+      refetch: hourQuery.refetch,
     }
+  }
 
-    scheduleNextRun()
-
-    return () => {
-      if (timeoutId !== null) {
-        clearTimeout(timeoutId)
-      }
-      if (intervalId !== null) {
-        clearInterval(intervalId)
-      }
+  if (period === "day") {
+    return {
+      data: dayQuery.data ?? [],
+      isLoading: dayQuery.isLoading,
+      isFetching: dayQuery.isFetching,
+      refetch: dayQuery.refetch,
     }
-  }, [refetch])
+  }
 
-  return query
+  return {
+    data: monthQuery.data ?? [],
+    isLoading: monthQuery.isLoading,
+    isFetching: monthQuery.isFetching,
+    refetch: monthQuery.refetch,
+  }
 }

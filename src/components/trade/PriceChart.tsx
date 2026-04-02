@@ -11,7 +11,7 @@ export default function PriceChart() {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-gray-800">Price Chart</h2>
+        <h2 className="text-sm font-semibold text-gray-800">Gráfico de precios</h2>
         <div className="flex items-center gap-1">
           {timeFilters.map((f) => (
             <button

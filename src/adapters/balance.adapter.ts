@@ -9,6 +9,12 @@ export interface CurrencyBalanceCard {
   amount: number
 }
 
+export interface BalancesApiResponse {
+  balances: BackendBalance[]
+  balanceTotal: number
+  cotizacionFecha: string
+}
+
 const symbolMap: Record<string, string> = {
   ARS: "$AR",
   EUR: "€",
@@ -26,6 +32,17 @@ const isBackendBalance = (value: unknown): value is BackendBalance => {
 export const balancesResponseToCards = (payload: unknown): CurrencyBalanceCard[] => {
   if (!Array.isArray(payload)) return []
   return payload.filter(isBackendBalance).map((balance) => toCurrencyBalanceCard(balance))
+}
+
+export const balancesApiResponseToResult = (
+  payload: unknown,
+): { cards: CurrencyBalanceCard[]; balanceTotal: number } => {
+  if (!payload || typeof payload !== "object") return { cards: [], balanceTotal: 0 }
+  const data = payload as BalancesApiResponse
+  return {
+    cards: balancesResponseToCards(data.balances),
+    balanceTotal: typeof data.balanceTotal === "number" ? data.balanceTotal : 0,
+  }
 }
 
 export const toCurrencyBalanceCard = (
