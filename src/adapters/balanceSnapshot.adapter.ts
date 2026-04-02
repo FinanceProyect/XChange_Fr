@@ -112,7 +112,7 @@ export const buildDailyPoints = (
   entries: { date: string; snapshots: BalanceSnapshotPoint[] }[],
 ): ChartPoint[] => {
   return entries
-    .map(({ date, snapshots }) => {
+    .map(({ date, snapshots }): ChartPoint | null => {
       if (!snapshots.length) return null;
       const last = snapshots[snapshots.length - 1];
       return { label: toDayLabel(date), total: last.total };
