@@ -94,7 +94,7 @@ export default function AddOperationModal({
 
   const toggleDebtorSection = () =>
     setForm((prev) => {
-      if (prev.type !== "Venta") return prev;
+      if (prev.type === "") return prev;
       const nextAdd = !prev.addDebtor;
       return {
         ...prev,
@@ -108,9 +108,6 @@ export default function AddOperationModal({
     setForm((prev) => ({
       ...prev,
       type: t,
-      addDebtor: t === "Venta" ? prev.addDebtor : false,
-      debtorName: t === "Venta" ? prev.debtorName : "",
-      debtorId: t === "Venta" ? prev.debtorId : null,
     }));
 
   const handleSave = () => {
@@ -131,7 +128,7 @@ export default function AddOperationModal({
       payload.monto = parseFloat(form.amount);
     }
 
-    if (form.addDebtor && form.type === "Venta") {
+    if (form.addDebtor) {
       payload.nombre = form.debtorName.trim();
       payload.fecha = formatLocalDateTime();
       if (form.debtorId) {
@@ -330,7 +327,7 @@ export default function AddOperationModal({
           {/* Toggle deudor */}
           <div
             className={`flex items-center justify-between rounded-lg border px-3 py-2 ${
-              form.type === "Venta"
+              form.type !== ""
                 ? "border-gray-200 bg-gray-50"
                 : "border-dashed border-gray-200 bg-gray-100"
             }`}
@@ -340,17 +337,17 @@ export default function AddOperationModal({
                 Datos del deudor
               </p>
               <p className="text-xs text-gray-500">
-                {form.type === "Venta"
+                {form.type !== ""
                   ? "Activa para registrar el nombre del deudor"
-                  : "Solo disponible para una venta"}
+                  : "Selecciona primero el tipo de operación"}
               </p>
             </div>
             <button
               type="button"
               onClick={toggleDebtorSection}
-              disabled={form.type !== "Venta"}
+              disabled={form.type === ""}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                form.type === "Venta"
+                form.type !== ""
                   ? form.addDebtor
                     ? "bg-blue-600"
                     : "bg-gray-300"
@@ -372,7 +369,7 @@ export default function AddOperationModal({
             <DebtorAutocomplete
               nombre={form.debtorName}
               selectedId={form.debtorId}
-              disabled={!form.addDebtor || form.type !== "Venta"}
+              disabled={!form.addDebtor || form.type === ""}
               onChange={(nombre, id) =>
                 setForm((prev) => ({ ...prev, debtorName: nombre, debtorId: id }))
               }
