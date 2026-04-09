@@ -11,6 +11,7 @@ interface FormState {
   type: OperationType | "";
   amount: string;
   cotizacion: string;
+  conversion: OperationCurrency | "";
   quilataje: string;
   peso: string;
   addDebtor: boolean;
@@ -23,6 +24,7 @@ const EMPTY: FormState = {
   type: "",
   amount: "",
   cotizacion: "",
+  conversion: "",
   quilataje: "",
   peso: "",
   addDebtor: false,
@@ -196,7 +198,7 @@ export default function AddOperationModal({
           </div>
         </div>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 overflow-y-auto max-h-[340px] pr-1">
           {/* Moneda / Activo */}
           <div>
             <label className="text-xs text-gray-500 mb-1 block">Moneda</label>
@@ -324,6 +326,27 @@ export default function AddOperationModal({
               )}
           </div>
 
+          {/* Conversión */}
+          <div>
+            <label className="text-xs text-gray-500 mb-1 block">
+              Conversión
+            </label>
+            <select
+              value={form.conversion}
+              onChange={(e) =>
+                set("conversion", e.target.value as OperationCurrency | "")
+              }
+              className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              <option value="">Seleccionar moneda</option>
+              <option value="EUR">€ Euro (EUR)</option>
+              <option value="USD">$ Dólar (USD)</option>
+              <option value="BRL">R$ Real Brasileño (BRL)</option>
+              <option value="USDT">₮ Tether (USDT)</option>
+              <option value="METAL">Metal</option>
+            </select>
+          </div>
+
           {/* Toggle deudor */}
           <div
             className={`flex items-center justify-between rounded-lg border px-3 py-2 ${
@@ -378,7 +401,7 @@ export default function AddOperationModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center gap-3 mt-6">
+        <div className="flex items-center gap-3 mt-4">
           <button
             onClick={onClose}
             className="flex-1 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 cursor-pointer transition-colors"

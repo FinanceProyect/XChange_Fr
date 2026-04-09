@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Wallet, Globe, PiggyBank, Save } from "lucide-react";
+import { Wallet, Globe, PiggyBank, Save, TrendingUp } from "lucide-react";
 import { currencyBalances } from "../data/mockData";
 import {
   useConfiguracion,
@@ -48,6 +48,8 @@ export default function Settings() {
       currencyBalances.map((b) => [b.currency, b.amount.toString()]),
     ),
   );
+  const [cotizacionManual, setCotizacionManual] = useState(false);
+  const [cotizacionValor, setCotizacionValor] = useState("");
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -215,8 +217,86 @@ export default function Settings() {
                 <option value="pt">Português</option>
               </select>
             </div>
+
+            {/* Cotización del balance total */}
+            <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp size={16} className="text-blue-600" />
+                <h2 className="text-sm font-semibold text-gray-800">
+                  Cotización del balance total
+                </h2>
+              </div>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">
+                      Cotización manual
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {cotizacionManual
+                        ? "Ingresa el valor de cotización manualmente"
+                        : "La cotización se calcula de forma automática"}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCotizacionManual((prev) => !prev);
+                      setCotizacionValor("");
+                    }}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      cotizacionManual ? "bg-blue-600" : "bg-gray-300"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                        cotizacionManual ? "translate-x-5" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                <div>
+                  <label className="text-xs text-gray-500 mb-1 block">
+                    Valor de cotización
+                  </label>
+                  <div
+                    className={`flex items-center border rounded-md overflow-hidden focus-within:ring-1 focus-within:ring-blue-500 ${
+                      cotizacionManual
+                        ? "border-gray-200"
+                        : "border-gray-100 bg-gray-100"
+                    }`}
+                  >
+                    <span
+                      className={`px-3 py-2 text-sm border-r border-gray-200 min-w-[40px] text-center ${
+                        cotizacionManual ? "text-gray-400 bg-gray-50" : "text-gray-300 bg-gray-100"
+                      }`}
+                    >
+                      $
+                    </span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.0001"
+                      placeholder="0.0000"
+                      disabled={!cotizacionManual}
+                      value={cotizacionValor}
+                      onChange={(e) => setCotizacionValor(e.target.value)}
+                      className={`flex-1 px-3 py-2 text-sm focus:outline-none ${
+                        cotizacionManual
+                          ? "text-gray-700 bg-white"
+                          : "text-gray-400 bg-gray-100 cursor-not-allowed"
+                      }`}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* Versión */}
+        <p className="text-center text-xs text-gray-400 mt-6">versión 1.0.0</p>
       </div>
 
       {isConfirmOpen && (

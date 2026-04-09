@@ -1,7 +1,6 @@
-Las cards siguen sin tener contenedor visual. Cada card debe verse como una caja independiente con:
-cssbackground: var(--color-background-primary);
-border: 0.5px solid var(--color-border-tertiary);
-border-radius: 12px;
-padding: 1.25rem 1rem 1rem;
-Revisá CurrencyCard.tsx — probablemente el div contenedor no tiene estas clases/estilos aplicados. Si usás Tailwind: bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-4.
-La barra de acento de color ya se ve bien arriba — solo falta que la card tenga fondo y borde para que se distinga del fondo de la página.
+Pop-up "Editar operación" — descripción de estructura
+El modal es un contenedor blanco con bordes redondeados (16px) y un borde sutil de 0.5px. El ancho máximo es 420px y está centrado sobre un fondo oscuro semitransparente.
+Header: Fila con el título "Editar operación" (17px, weight 500) a la izquierda y un botón ✕ a la derecha. Separado del cuerpo por una línea divisoria de 0.5px.
+Sección de metadatos: Grid de 2 columnas con 4 tarjetas de fondo secundario (border-radius 10px, padding 10px 14px). Cada tarjeta tiene una etiqueta superior en mayúsculas (11px, color secundario) y el valor debajo (14px, weight 500). Las tarjetas de Moneda y Tipo muestran un badge pill en lugar de texto plano — verde para "$ USD" y rojo para "Venta".
+Formulario: Dos campos de input apilados verticalmente con su label encima (12px, weight 500, color secundario). Los inputs tienen padding 9px 12px, border-radius 8px y borde de 0.5px.
+Botones: Fila de dos botones sin separador. "Cancelar" ocupa 1 fracción (borde visible, fondo transparente) y "Guardar cambios" ocupa 2 fracciones (fondo azul #2563eb, texto blanco). Ambos con border-radius 8px y padding 10px.
