@@ -3,7 +3,7 @@ import { useDashboardCurrencyBalances } from "../queries/dashboard.query";
 import { Plus } from "lucide-react";
 import OperationsFilters from "../components/operations/OperationsFilters";
 import OperationsTable from "../components/operations/OperationsTable";
-import AddOperationModal from "../components/operations/AddOperationModal";
+import AddOperationProgress from "../components/operations/AddOperationProgress/AddOperationProgress";
 
 import Toast from "../components/ui/Toast";
 import BalanceAlertOverlay from "../components/ui/BalanceAlertOverlay";
@@ -70,12 +70,11 @@ export default function Operations() {
       </div>
       <OperationsTable currency={currency} type={type} />
 
-      {showModal && (
-        <AddOperationModal
-          onClose={() => setShowModal(false)}
-          onSave={handleSave}
-        />
-      )}
+      <AddOperationProgress
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSave={handleSave}
+      />
 
       {showToast && (
         <Toast

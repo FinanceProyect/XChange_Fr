@@ -35,7 +35,7 @@ export default function CurrencyCard({ currency, symbol, amount }: CurrencyCardP
       style={{
         borderTop: `3px solid ${accent}`,
         borderColor: `${accent}55`,
-        padding: "1.25rem 1rem 1rem",
+        padding: "0.75rem 0.5rem 0.625rem",
       }}
     >
       <div className="flex items-center justify-between mb-2">

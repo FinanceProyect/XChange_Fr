@@ -5,6 +5,7 @@ const navLinks = [
   { label: 'Dashboard',   to: '/' },
   { label: 'Operaciones', to: '/operations' },
   { label: 'Deudores',    to: '/debtors' },
+  { label: 'Acreedores',  to: '/creditors' },
 ]
 
 export default function Navbar() {
