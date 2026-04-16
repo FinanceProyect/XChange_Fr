@@ -1,6 +1,17 @@
-Pop-up "Editar operación" — descripción de estructura
-El modal es un contenedor blanco con bordes redondeados (16px) y un borde sutil de 0.5px. El ancho máximo es 420px y está centrado sobre un fondo oscuro semitransparente.
-Header: Fila con el título "Editar operación" (17px, weight 500) a la izquierda y un botón ✕ a la derecha. Separado del cuerpo por una línea divisoria de 0.5px.
-Sección de metadatos: Grid de 2 columnas con 4 tarjetas de fondo secundario (border-radius 10px, padding 10px 14px). Cada tarjeta tiene una etiqueta superior en mayúsculas (11px, color secundario) y el valor debajo (14px, weight 500). Las tarjetas de Moneda y Tipo muestran un badge pill en lugar de texto plano — verde para "$ USD" y rojo para "Venta".
-Formulario: Dos campos de input apilados verticalmente con su label encima (12px, weight 500, color secundario). Los inputs tienen padding 9px 12px, border-radius 8px y borde de 0.5px.
-Botones: Fila de dos botones sin separador. "Cancelar" ocupa 1 fracción (borde visible, fondo transparente) y "Guardar cambios" ocupa 2 fracciones (fondo azul #2563eb, texto blanco). Ambos con border-radius 8px y padding 10px.
+{
+    "content": [
+        {
+            "id": "9f9430d8-7450-40dd-857c-9138df0d7b76",
+            "fechaHora": "2026-04-16T12:44:37.520063",
+            "activoEntrada": "EUR",
+            "montoEntrada": 1000.0000,
+            "activoSalida": "USD",
+            "montoSalida": 1000.0000,
+            "tasaCambio": 1.0000
+        }
+    ],
+    "page": 0,
+    "size": 7,
+    "totalElements": 1,
+    "totalPages": 1
+}

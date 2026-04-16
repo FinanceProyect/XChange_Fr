@@ -28,7 +28,7 @@ const typeColors: Record<OperationType, string> = {
   Venta:  'bg-red-100 text-red-600',
 }
 
-const PAGE_SIZE    = 8
+const PAGE_SIZE    = 6
 const SWIPE_THRESHOLD = 90
 const MAX_SWIPE       = 130
 
@@ -180,25 +180,27 @@ export default function OperationsTable({ currency, type }: OperationsTableProps
                     </tr>
                   )
                 })}
-                {emptyRows > 0 && Array.from({ length: emptyRows }).map((_, index) => (
-                  <tr
-                    key={`placeholder-${index}`}
-                    className="h-14 align-middle border-b border-gray-50"
-                    aria-hidden
-                  >
-                    <td colSpan={6} className="py-3 px-3">
-                      <span className="opacity-0">placeholder</span>
+                {rows.length === 0 ? (
+                  <tr aria-hidden>
+                    <td colSpan={6} className="h-[336px] text-center align-middle text-sm text-gray-400">
+                      No se encontraron operaciones
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  emptyRows > 0 && Array.from({ length: emptyRows }).map((_, index) => (
+                    <tr
+                      key={`placeholder-${index}`}
+                      className="h-14 align-middle border-b border-gray-50"
+                      aria-hidden
+                    >
+                      <td colSpan={6} className="py-3 px-3">
+                        <span className="opacity-0">placeholder</span>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
-
-            {rows.length === 0 && (
-              <p className="py-6 text-center text-sm text-gray-400">
-                No se encontraron operaciones
-              </p>
-            )}
 
             <div className="flex items-center justify-between mt-4">
               <p className="text-xs text-gray-500">

@@ -6,6 +6,7 @@ const navLinks = [
   { label: 'Operaciones', to: '/operations' },
   { label: 'Deudores',    to: '/debtors' },
   { label: 'Acreedores',  to: '/creditors' },
+  { label: 'Intercambios', to: '/exchanges' },
 ]
 
 export default function Navbar() {

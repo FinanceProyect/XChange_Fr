@@ -1,17 +1,34 @@
 import type { ReactNode } from 'react'
 import { X } from 'lucide-react'
-import type { OperationForm, StepId } from './operation.types'
+import type { StepId } from './operation.types'
 import useOperationForm from './useOperationForm'
 import StepIndicator from './StepIndicator'
 import ModalFooter from './ModalFooter'
 import Step1Operation from './Step1Operation'
 import Step2Parties from './Step2Parties'
 import Step3Summary from './Step3Summary'
+import { useCreateOperacion } from '../../../queries/operaciones.query'
+
+const formatLocalDateTime = () => {
+  const now = new Date()
+  const pad = (value: number) => value.toString().padStart(2, '0')
+  const year = now.getFullYear()
+  const month = pad(now.getMonth() + 1)
+  const day = pad(now.getDate())
+  const hours = pad(now.getHours())
+  const minutes = pad(now.getMinutes())
+  const seconds = pad(now.getSeconds())
+  const offsetMinutes = now.getTimezoneOffset()
+  const sign = offsetMinutes > 0 ? '-' : '+'
+  const offsetHours = pad(Math.floor(Math.abs(offsetMinutes) / 60))
+  const offsetRemainder = pad(Math.abs(offsetMinutes) % 60)
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${sign}${offsetHours}:${offsetRemainder}`
+}
 
 interface AddOperationProgressProps {
   isOpen: boolean
   onClose: () => void
-  onSave: (form: OperationForm) => void
+  onSave: () => void
 }
 
 export default function AddOperationProgress({ isOpen, onClose, onSave }: AddOperationProgressProps) {
@@ -27,9 +44,49 @@ export default function AddOperationProgress({ isOpen, onClose, onSave }: AddOpe
     isCurrentStepValid,
     errors,
     showErrors,
+    reset,
   } = useOperationForm()
 
+  const { mutate: createOperacion, isPending } = useCreateOperacion()
+
   if (!isOpen) return null
+
+  const handleSave = () => {
+    const payload: Record<string, unknown> = {
+      tipo: form.opType === 'Compra' ? 'COMPRA' : 'VENTA',
+      activoId: form.currency,
+      tasaCambio: parseFloat(form.quote),
+    }
+
+    if (isMetal) {
+      payload.quilataje = form.karat
+      payload.peso = parseFloat(form.weight)
+    } else {
+      payload.monto = parseFloat(form.quantity)
+    }
+
+    if (form.hasDebtor) {
+      payload.deudor = {
+        nombre: form.debtorName.trim(),
+        fecha: formatLocalDateTime(),
+      }
+    }
+
+    if (form.hasCreditor) {
+      payload.acreedor = {
+        nombre: form.creditorName.trim(),
+        fechaVencimiento: form.creditorDueDate,
+      }
+    }
+
+    createOperacion(payload, {
+      onSuccess: () => {
+        reset()
+        onSave()
+        onClose()
+      },
+    })
+  }
 
   const stepComponents: Record<StepId, ReactNode> = {
     1: (
@@ -54,7 +111,6 @@ export default function AddOperationProgress({ isOpen, onClose, onSave }: AddOpe
       <Step3Summary
         form={form}
         isMetal={isMetal}
-        computedAmount={computedAmount}
       />
     ),
   }
@@ -78,9 +134,9 @@ export default function AddOperationProgress({ isOpen, onClose, onSave }: AddOpe
         {stepComponents[step]}
         <ModalFooter
           onBack={goBack}
-          onNext={step === 3 ? () => { onSave(form); onClose(); } : goNext}
+          onNext={step === 3 ? handleSave : goNext}
           isBackDisabled={step === 1}
-          isNextDisabled={!isCurrentStepValid}
+          isNextDisabled={!isCurrentStepValid || (step === 3 && isPending)}
           nextLabel={step === 3 ? 'Guardar' : 'Continuar'}
         />
       </div>

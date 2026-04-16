@@ -10,14 +10,14 @@ export const getById = async (id: string) => {
   return response.data
 }
 
-// Enruta a /compra o /venta según el campo `tipo` del payload
+// Enruta a /compra o /venta según el campo `tipo` del payload (tipo no se envía en el body)
 export const create = async (data: unknown) => {
-  const payload = data as { tipo?: string }
+  const { tipo, ...body } = data as { tipo?: string; [key: string]: unknown }
   const endpoint =
-    payload.tipo === 'COMPRA' || payload.tipo === 'Compra'
+    tipo === 'COMPRA' || tipo === 'Compra'
       ? '/operaciones/compra'
       : '/operaciones/venta'
-  const response = await apiClient.post(endpoint, data)
+  const response = await apiClient.post(endpoint, body)
   return response.data
 }
 

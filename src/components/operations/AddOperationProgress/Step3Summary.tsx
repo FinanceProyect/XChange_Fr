@@ -3,7 +3,6 @@ import type { OperationForm } from './operation.types'
 interface Step3SummaryProps {
   form: OperationForm
   isMetal: boolean
-  computedAmount: string
 }
 
 interface SummaryRowProps {
@@ -20,16 +19,15 @@ function SummaryRow({ label, value }: SummaryRowProps) {
   )
 }
 
-export default function Step3Summary({ form, isMetal, computedAmount }: Step3SummaryProps) {
+export default function Step3Summary({ form, isMetal }: Step3SummaryProps) {
   return (
     <div className="flex flex-col gap-1 bg-gray-50 rounded-lg p-4">
       <SummaryRow label="Tipo" value={form.opType} />
       <SummaryRow label="Moneda" value={form.currency} />
       {isMetal && form.karat && <SummaryRow label="Quilataje" value={form.karat} />}
       {isMetal && form.weight && <SummaryRow label="Peso" value={`${form.weight} g`} />}
-      <SummaryRow label="Cantidad" value={form.quantity} />
+      <SummaryRow label="Monto" value={form.quantity} />
       <SummaryRow label="Cotización" value={form.quote} />
-      <SummaryRow label="Importe" value={computedAmount || '—'} />
       {form.hasDebtor && <SummaryRow label="Deudor" value={form.debtorName} />}
       {form.hasCreditor && (
         <>

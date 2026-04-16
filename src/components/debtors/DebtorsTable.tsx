@@ -24,7 +24,7 @@ const parseAmount = (value: string | number | null | undefined) => {
   return Number.isNaN(parsed) ? 0 : parsed;
 };
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 6;
 
 export default function DebtorsTable() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -189,7 +189,14 @@ export default function DebtorsTable() {
                     </td>
                   </tr>
                 ))}
-                {emptyRows > 0 &&
+                {paginated.length === 0 ? (
+                  <tr aria-hidden>
+                    <td colSpan={6} className="h-[336px] text-center align-middle text-sm text-gray-400">
+                      No se encontraron resultados
+                    </td>
+                  </tr>
+                ) : (
+                  emptyRows > 0 &&
                   Array.from({ length: emptyRows }).map((_, index) => (
                     <tr
                       key={`placeholder-${index}`}
@@ -200,15 +207,10 @@ export default function DebtorsTable() {
                         <span className="opacity-0">placeholder</span>
                       </td>
                     </tr>
-                  ))}
+                  ))
+                )}
               </tbody>
             </table>
-
-            {paginated.length === 0 && (
-              <p className="py-6 text-center text-sm text-gray-400">
-                No se encontraron resultados
-              </p>
-            )}
 
             <div className="flex items-center justify-between mt-4">
               <p className="text-xs text-gray-500">

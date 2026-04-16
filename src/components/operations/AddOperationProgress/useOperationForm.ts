@@ -122,6 +122,12 @@ export default function useOperationForm() {
     }
   }
 
+  const reset = () => {
+    setForm(initialForm)
+    setStep(1)
+    setShowErrors(false)
+  }
+
   return {
     form,
     updateField,
@@ -136,5 +142,6 @@ export default function useOperationForm() {
     showErrors,
     triggerValidation,
     resetShowErrors,
+    reset,
   }
 }
