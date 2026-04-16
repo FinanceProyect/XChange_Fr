@@ -16,8 +16,9 @@ interface DashboardStats {
 }
 
 export default function Dashboard() {
-  const { data } = useDashboardStats();
-  const { data: balancesData } = useDashboardCurrencyBalances();
+  const { data, isLoading: isLoadingStats } = useDashboardStats();
+  const { data: balancesData, isLoading: isLoadingBalances } = useDashboardCurrencyBalances();
+  const isLoading = isLoadingStats || isLoadingBalances;
   const stats = data as DashboardStats | undefined;
 
   const baseBalances = balancesData?.cards ?? [];
@@ -44,13 +45,37 @@ export default function Dashboard() {
     value: totalBalanceValue,
   };
 
-  // Mostrar overlay solo si balances NO está vacío y TODOS los saldos están en cero
+  // Mostrar overlay si ya cargó y no hay balances configurados o todos están en cero
   const showBalanceAlert =
+    !isLoading &&
     baseBalances.length > 0 &&
     baseBalances.every(
       (b) =>
         (typeof b.amount === "number" ? b.amount : Number(b.amount ?? 0)) === 0,
     );
+
+  if (isLoading) {
+    return (
+      <div className="bg-gray-50 px-5 py-5 lg:px-8 lg:py-6 animate-pulse">
+        <div className="flex flex-col gap-2 mb-5 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <div className="h-7 w-36 bg-gray-200 rounded mb-2" />
+            <div className="h-4 w-56 bg-gray-200 rounded" />
+          </div>
+          <div className="mt-3 lg:mt-0 w-full md:max-w-xs lg:max-w-sm h-16 bg-gray-200 rounded-xl" />
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-8">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="h-28 bg-gray-200 rounded-xl" />
+          ))}
+        </div>
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="lg:flex-[3] h-64 bg-gray-200 rounded-xl" />
+          <div className="lg:flex-[2] h-64 bg-gray-200 rounded-xl" />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="bg-gray-50 px-5 py-5 lg:px-8 lg:py-6">

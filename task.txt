@@ -1,17 +1,11 @@
-{
-    "content": [
-        {
-            "id": "9f9430d8-7450-40dd-857c-9138df0d7b76",
-            "fechaHora": "2026-04-16T12:44:37.520063",
-            "activoEntrada": "EUR",
-            "montoEntrada": 1000.0000,
-            "activoSalida": "USD",
-            "montoSalida": 1000.0000,
-            "tasaCambio": 1.0000
-        }
-    ],
-    "page": 0,
-    "size": 7,
-    "totalElements": 1,
-    "totalPages": 1
-}
+  [                          
+    {                                                                                                                                                
+      "id": "...",                                      
+      "deudorId": "...",                                                                                                                             
+      "nombreDeudor": "Juan Perez",                       
+      "nombreDivisa": "ARS",                                                                                                                         
+      "monto": 5000.00,                                                                                                                              
+      "fecha": "2026-05-17T10:00:00Z",                                                                                                               
+      "estado": "PENDIENTE"                                                                                                                          
+    }             
+  ]  

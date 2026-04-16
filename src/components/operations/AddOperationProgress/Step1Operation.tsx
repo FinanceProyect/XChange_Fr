@@ -84,6 +84,7 @@ export default function Step1Operation({
       <PartyToggleGroup
         hasDebtor={form.hasDebtor}
         hasCreditor={form.hasCreditor}
+        opType={form.opType}
         onToggleDebtor={v => updateField('hasDebtor', v)}
         onToggleCreditor={v => updateField('hasCreditor', v)}
       />

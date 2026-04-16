@@ -1,22 +1,22 @@
 export interface BackendSaldo {
   id: string
-  codigoDivisa: string
+  nombreDivisa: string
   monto: number
   fechaOperacion: string
   tipoOperacion: string
+  estado: string
 }
 
 // Shape devuelta por el backend en GET /acreedores y GET /acreedores/{id}
 export interface BackendAcreedor {
   id: string
   nombre: string
-  fechaVencimiento: string | null
-  estado: string
   saldos: BackendSaldo[]
 }
 
 export interface Creditor {
-  id: string        // UUID del acreedor (necesario para el endpoint pagar)
+  id: string      // UUID del acreedor (necesario para el endpoint pagar)
+  saldoId: string // UUID del saldo (key único por fila)
   name: string
   currency: string
   amount: number
@@ -26,14 +26,13 @@ export interface Creditor {
 
 // Devuelve una fila por cada saldo del acreedor
 export function acreedorToFrontend(raw: BackendAcreedor): Creditor[] {
-  const acreedorPagado = raw.estado.toUpperCase() === 'PAGADO'
-
   return raw.saldos.map((saldo) => ({
     id: raw.id,
+    saldoId: saldo.id,
     name: raw.nombre ?? '',
-    currency: saldo.codigoDivisa ?? '',
+    currency: saldo.nombreDivisa ?? '',
     amount: Number(saldo.monto ?? 0),
-    dueDate: raw.fechaVencimiento ?? '',
-    status: acreedorPagado || saldo.monto === 0 ? 'Paid' : 'Pending',
+    dueDate: saldo.fechaOperacion ?? '',
+    status: saldo.estado.toUpperCase() === 'PAGADO' ? 'Paid' : 'Pending',
   }))
 }

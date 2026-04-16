@@ -1,3 +1,13 @@
+// Convierte "YYYY-MM-DD" a "YYYY-MM-DDTHH:mm:ss±HH:MM" con el offset local del usuario
+export const toLocalISODateTime = (dateStr: string): string => {
+  const pad = (v: number) => v.toString().padStart(2, '0')
+  const offsetMinutes = new Date().getTimezoneOffset()
+  const sign = offsetMinutes > 0 ? '-' : '+'
+  const offsetHours = pad(Math.floor(Math.abs(offsetMinutes) / 60))
+  const offsetRemainder = pad(Math.abs(offsetMinutes) % 60)
+  return `${dateStr}T00:00:00${sign}${offsetHours}:${offsetRemainder}`
+}
+
 export const parseDateValue = (value?: string) => {
   if (!value) return 0;
   const timestamp = Date.parse(value);

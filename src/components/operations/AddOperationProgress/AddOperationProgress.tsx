@@ -8,6 +8,7 @@ import Step1Operation from './Step1Operation'
 import Step2Parties from './Step2Parties'
 import Step3Summary from './Step3Summary'
 import { useCreateOperacion } from '../../../queries/operaciones.query'
+import { toLocalISODateTime } from '../../../utils/date'
 
 const formatLocalDateTime = () => {
   const now = new Date()
@@ -75,7 +76,7 @@ export default function AddOperationProgress({ isOpen, onClose, onSave }: AddOpe
     if (form.hasCreditor) {
       payload.acreedor = {
         nombre: form.creditorName.trim(),
-        fechaVencimiento: form.creditorDueDate,
+        fechaVencimiento: toLocalISODateTime(form.creditorDueDate),
       }
     }
 

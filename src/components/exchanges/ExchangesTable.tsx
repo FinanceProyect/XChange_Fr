@@ -27,7 +27,7 @@ const CURRENCY_COLORS: Record<string, string> = {
   BRL: '#BA7517',
 }
 
-const PAGE_SIZE = 6
+const PAGE_SIZE = 8
 
 export default function ExchangesTable() {
   const [currentPage, setCurrentPage] = useState(1)
@@ -52,7 +52,9 @@ export default function ExchangesTable() {
     <>
       <div className="bg-white rounded-xl border border-gray-200 p-5">
         {isLoading && (
-          <p className="text-sm text-gray-400 text-center py-6">Cargando...</p>
+          <div className="h-[484px] flex items-center justify-center">
+            <p className="text-sm text-gray-400">Cargando...</p>
+          </div>
         )}
 
         {!isLoading && (
@@ -112,7 +114,7 @@ export default function ExchangesTable() {
                 ))}
                 {paginated.length === 0 ? (
                   <tr aria-hidden>
-                    <td colSpan={3} className="h-[336px] text-center align-middle text-sm text-gray-400">
+                    <td colSpan={3} className="h-[448px] text-center align-middle text-sm text-gray-400">
                       No se encontraron resultados
                     </td>
                   </tr>

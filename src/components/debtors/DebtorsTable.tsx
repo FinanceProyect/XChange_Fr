@@ -24,7 +24,15 @@ const parseAmount = (value: string | number | null | undefined) => {
   return Number.isNaN(parsed) ? 0 : parsed;
 };
 
-const PAGE_SIZE = 6;
+const CURRENCY_COLORS: Record<string, string> = {
+  EUR:   'bg-blue-100 text-blue-700',
+  USD:   'bg-green-100 text-green-700',
+  BRL:   'bg-yellow-100 text-yellow-700',
+  USDT:  'bg-purple-100 text-purple-700',
+  METAL: 'bg-amber-100 text-amber-700',
+}
+
+const PAGE_SIZE = 8;
 
 export default function DebtorsTable() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -69,7 +77,7 @@ export default function DebtorsTable() {
     setPayingId(debtor.id);
 
     pagarDeudor(
-      { id: debtor.id, pagos: [{ moneda: debtor.moneda ?? 'USD', monto: amountValue }] },
+      { id: debtor.id, monto: amountValue },
       {
         onSuccess: (updated) => {
           const nextState = (
@@ -112,25 +120,29 @@ export default function DebtorsTable() {
         </div>
 
         {isLoading && (
-          <p className="text-sm text-gray-400 text-center py-6">Cargando...</p>
+          <div className="h-[484px] flex items-center justify-center">
+            <p className="text-sm text-gray-400">Cargando...</p>
+          </div>
         )}
 
         {!isLoading && (
           <>
             <table className="w-full text-sm table-fixed">
               <colgroup>
-                <col className="w-[110px]" />
-                <col className="w-[90px]" />
-                <col className="w-[260px]" />
-                <col className="w-[150px]" />
-                <col className="w-[150px]" />
+                <col className="w-[100px]" />
                 <col className="w-[80px]" />
+                <col className="w-[220px]" />
+                <col className="w-[90px]" />
+                <col className="w-[130px]" />
+                <col className="w-[130px]" />
+                <col className="w-[70px]" />
               </colgroup>
               <thead>
                 <tr className="text-xs text-gray-400 uppercase border-b border-gray-100">
                   <th className="text-left py-2 font-medium">Fecha</th>
                   <th className="text-left py-2 font-medium">Hora</th>
                   <th className="text-left py-2 font-medium">Nombre</th>
+                  <th className="text-left py-2 font-medium">Moneda</th>
                   <th className="text-left py-2 font-medium">Importe</th>
                   <th className="text-left py-2 font-medium pl-6">Estado</th>
                   <th className="py-2 font-medium" />
@@ -166,6 +178,13 @@ export default function DebtorsTable() {
                         </span>
                       </div>
                     </td>
+                    <td className="py-3">
+                      {debtor.moneda ? (
+                        <span className={`text-xs font-semibold rounded-full px-2 py-0.5 ${CURRENCY_COLORS[debtor.moneda] ?? 'bg-gray-100 text-gray-600'}`}>
+                          {debtor.moneda}
+                        </span>
+                      ) : '—'}
+                    </td>
                     <td className="py-3 font-medium text-green-600">
                       {debtor.amount || "—"}
                     </td>
@@ -191,7 +210,7 @@ export default function DebtorsTable() {
                 ))}
                 {paginated.length === 0 ? (
                   <tr aria-hidden>
-                    <td colSpan={6} className="h-[336px] text-center align-middle text-sm text-gray-400">
+                    <td colSpan={7} className="h-[448px] text-center align-middle text-sm text-gray-400">
                       No se encontraron resultados
                     </td>
                   </tr>
@@ -203,7 +222,7 @@ export default function DebtorsTable() {
                       className="h-14 align-middle border-b border-gray-50"
                       aria-hidden
                     >
-                      <td className="py-3" colSpan={6}>
+                      <td className="py-3" colSpan={7}>
                         <span className="opacity-0">placeholder</span>
                       </td>
                     </tr>

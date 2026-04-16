@@ -7,9 +7,10 @@ import BalanceAlertOverlay from '../components/ui/BalanceAlertOverlay'
 import Toast from '../components/ui/Toast'
 
 export default function Exchanges() {
-  const { data: remoteBalances } = useDashboardCurrencyBalances()
-  const balances = Array.isArray(remoteBalances) ? remoteBalances : []
+  const { data: remoteBalances, isLoading } = useDashboardCurrencyBalances()
+  const balances = remoteBalances?.cards ?? []
   const showBalanceAlert =
+    !isLoading &&
     balances.length > 0 &&
     balances.every(
       (b) => (typeof b.amount === 'number' ? b.amount : Number(b.amount ?? 0)) === 0,
@@ -17,6 +18,31 @@ export default function Exchanges() {
 
   const [showModal, setShowModal] = useState(false)
   const [showToast, setShowToast] = useState(false)
+
+  if (isLoading) {
+    return (
+      <div className="bg-gray-50 px-5 py-5 lg:px-8 lg:py-6 animate-pulse">
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <div className="h-7 w-36 bg-gray-200 rounded mb-2" />
+            <div className="h-4 w-64 bg-gray-200 rounded" />
+          </div>
+          <div className="h-9 w-24 bg-gray-200 rounded-lg" />
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="h-14 border-b border-gray-50 flex items-center gap-4">
+              <div className="h-4 w-20 bg-gray-200 rounded" />
+              <div className="h-5 w-14 bg-gray-200 rounded-full" />
+              <div className="h-5 w-14 bg-gray-200 rounded-full" />
+              <div className="h-4 w-24 bg-gray-200 rounded" />
+              <div className="h-4 w-24 bg-gray-200 rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="bg-gray-50 px-5 py-5 lg:px-8 lg:py-6">

@@ -15,7 +15,7 @@ export const useSaveConfiguracion = () => {
     mutationFn: (data: unknown) => saveConfiguracion(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['configuracion'] })
-      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
     },
   })
 }

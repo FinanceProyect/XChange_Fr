@@ -50,6 +50,9 @@ export default function useOperationForm() {
       if (key === 'hasCreditor' && value === true) {
         updated.hasDebtor = false
       }
+      if (key === 'opType' && value === 'Venta') {
+        updated.hasCreditor = false
+      }
       return updated
     })
   }
@@ -58,7 +61,12 @@ export default function useOperationForm() {
     const errors: Partial<Record<keyof OperationForm, string>> = {}
     if (s === 1) {
       if (!form.currency) errors.currency = 'Selecciona una moneda'
-      if (!form.quantity || parseFloat(form.quantity) <= 0) errors.quantity = 'Ingresa una cantidad válida'
+      if (isMetal) {
+        if (!form.karat) errors.karat = 'Selecciona el quilataje'
+        if (!form.weight || parseFloat(form.weight) <= 0) errors.weight = 'Ingresa el peso'
+      } else {
+        if (!form.quantity || parseFloat(form.quantity) <= 0) errors.quantity = 'Ingresa una cantidad válida'
+      }
       if (!form.quote || parseFloat(form.quote) <= 0) errors.quote = 'Ingresa una cotización válida'
     }
     if (s === 2) {

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { X } from 'lucide-react'
 import { useCreateAcreedor } from '../../queries/acreedores.query'
 import DatePicker from '../operations/AddOperationProgress/DatePicker'
+import { toLocalISODateTime } from '../../utils/date'
 
 const CURRENCIES = ['EUR', 'USD', 'BRL', 'USDT', 'METAL']
 const TIPO_OPERACION = ['COMPRA', 'VENTA']
@@ -47,14 +48,10 @@ export default function AddCreditorModal({ onClose, onSave }: AddCreditorModalPr
     createAcreedor(
       {
         nombre: form.nombre.trim(),
-        ...(form.fechaVencimiento ? { fechaVencimiento: form.fechaVencimiento } : {}),
-        saldos: [
-          {
-            codigoDivisa: form.moneda,
-            monto: parseFloat(form.importe),
-            tipoOperacion: form.tipoOperacion,
-          },
-        ],
+        nombreDivisa: form.moneda,
+        monto: parseFloat(form.importe),
+        tipoOperacion: form.tipoOperacion,
+        ...(form.fechaVencimiento ? { fechaOperacion: toLocalISODateTime(form.fechaVencimiento) } : {}),
       },
       {
         onSuccess: () => {

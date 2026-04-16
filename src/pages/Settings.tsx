@@ -26,7 +26,7 @@ const currencySymbols: Record<string, string> = {
 };
 
 export default function Settings() {
-  const { data } = useConfiguracion();
+  const { data, isLoading } = useConfiguracion();
   const { mutate: saveConfig, isPending } = useSaveConfiguracion();
 
   const backendData = data as
@@ -99,6 +99,28 @@ export default function Settings() {
       onSuccess: () => setToastMessage("Configuración guardada con éxito"),
     });
   };
+
+  if (isLoading) {
+    return (
+      <div className="bg-gray-50 px-5 py-5 lg:px-8 lg:py-6 animate-pulse">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <div className="h-7 w-36 bg-gray-200 rounded mb-2" />
+            <div className="h-4 w-56 bg-gray-200 rounded" />
+          </div>
+          <div className="h-9 w-36 bg-gray-200 rounded-lg" />
+        </div>
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="lg:flex-1 h-80 bg-gray-200 rounded-xl" />
+          <div className="lg:flex-1 flex flex-col gap-4">
+            <div className="h-36 bg-gray-200 rounded-xl" />
+            <div className="h-24 bg-gray-200 rounded-xl" />
+            <div className="h-36 bg-gray-200 rounded-xl" />
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <>

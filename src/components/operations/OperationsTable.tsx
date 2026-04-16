@@ -28,7 +28,7 @@ const typeColors: Record<OperationType, string> = {
   Venta:  'bg-red-100 text-red-600',
 }
 
-const PAGE_SIZE    = 6
+const PAGE_SIZE    = 8
 const SWIPE_THRESHOLD = 90
 const MAX_SWIPE       = 130
 
@@ -104,7 +104,9 @@ export default function OperationsTable({ currency, type }: OperationsTableProps
     <>
       <div className="bg-white rounded-xl border border-gray-200 p-5 overflow-x-hidden">
         {isLoading && (
-          <p className="text-sm text-gray-400 text-center py-8">Cargando...</p>
+          <div className="h-[484px] flex items-center justify-center">
+            <p className="text-sm text-gray-400">Cargando...</p>
+          </div>
         )}
 
         {!isLoading && (
@@ -182,7 +184,7 @@ export default function OperationsTable({ currency, type }: OperationsTableProps
                 })}
                 {rows.length === 0 ? (
                   <tr aria-hidden>
-                    <td colSpan={6} className="h-[336px] text-center align-middle text-sm text-gray-400">
+                    <td colSpan={6} className="h-[448px] text-center align-middle text-sm text-gray-400">
                       No se encontraron operaciones
                     </td>
                   </tr>

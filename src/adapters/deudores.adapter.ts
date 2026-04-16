@@ -1,19 +1,14 @@
 import type { Debtor } from '../data/mockData'
 
-export interface BackendDeuda {
-  id: string
-  moneda: string
-  montoPendiente: number
-  estado: string
-  fechaVencimiento: string
-}
-
-// Shape devuelta por el backend en GET /deudores y GET /deudores/{id}
+// Shape devuelta por el backend en GET /deudores (array plano de deudas)
 export interface BackendDeudor {
   id: string
-  nombre: string
+  deudorId: string
+  nombreDeudor: string
+  nombreDivisa: string
+  monto: number
   fecha: string
-  deudas: BackendDeuda[]
+  estado: string
 }
 
 function buildAvatar(nombre: string): string {
@@ -31,37 +26,14 @@ function mapEstado(estado: string): Debtor['status'] {
   return 'Pending'
 }
 
-export function deudorToFrontend(deudor: BackendDeudor): Debtor {
-  // Tomar la primera deuda activa (no saldada ni cerrada)
-  const activeDeuda =
-    deudor.deudas.find((d) => {
-      const s = d.estado.toUpperCase()
-      return s !== 'SALDADO' && s !== 'CERRADO'
-    }) ?? deudor.deudas[0]
-
-  const montoPendiente = activeDeuda?.montoPendiente ?? 0
-  const moneda = activeDeuda?.moneda ?? ''
-
-  // Determinar estado global: si todas las deudas están saldadas → Paid
-  let status: Debtor['status'] = 'Pending'
-  if (deudor.deudas.length === 0) {
-    status = 'Pending'
-  } else if (deudor.deudas.every((d) => {
-    const s = d.estado.toUpperCase()
-    return s === 'SALDADO' || s === 'CERRADO'
-  })) {
-    status = 'Paid'
-  } else if (activeDeuda) {
-    status = mapEstado(activeDeuda.estado)
-  }
-
+export function deudorToFrontend(raw: BackendDeudor): Debtor {
   return {
-    id:     deudor.id,
-    name:   deudor.nombre,
-    avatar: buildAvatar(deudor.nombre),
-    date:   deudor.fecha,
-    amount: String(montoPendiente),
-    status,
-    moneda,
+    id:     raw.id,
+    name:   raw.nombreDeudor ?? '',
+    avatar: buildAvatar(raw.nombreDeudor ?? ''),
+    date:   raw.fecha ?? '',
+    amount: String(raw.monto ?? 0),
+    status: mapEstado(raw.estado),
+    moneda: raw.nombreDivisa ?? '',
   }
 }

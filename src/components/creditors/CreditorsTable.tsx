@@ -10,21 +10,6 @@ import {
 } from '../../adapters/acreedores.adapter'
 import { formatDateValue } from '../../utils/date'
 
-const MOCK_CREDITORS: Creditor[] = [
-  { id: '1',  name: 'Banco Santander',    currency: 'EUR',  amount: 4200.00,  dueDate: '2025-06-15', status: 'Pending' },
-  { id: '2',  name: 'Banco Santander',    currency: 'USD',  amount: 1800.00,  dueDate: '2025-06-15', status: 'Pending' },
-  { id: '3',  name: 'Carlos Méndez',      currency: 'USD',  amount: 1500.50,  dueDate: '2025-05-30', status: 'Pending' },
-  { id: '4',  name: 'Carlos Méndez',      currency: 'EUR',  amount: 600.00,   dueDate: '2025-05-30', status: 'Paid'    },
-  { id: '5',  name: 'Proveedor Joyas SL', currency: 'EUR',  amount: 8750.00,  dueDate: '2025-07-01', status: 'Pending' },
-  { id: '6',  name: 'María López',        currency: 'USDT', amount: 320.00,   dueDate: '2025-04-20', status: 'Paid'    },
-  { id: '7',  name: 'Distribuidora BRL',  currency: 'BRL',  amount: 12000.00, dueDate: '2025-08-10', status: 'Pending' },
-  { id: '8',  name: 'Distribuidora BRL',  currency: 'USD',  amount: 2200.00,  dueDate: '2025-08-10', status: 'Pending' },
-  { id: '9',  name: 'Roberto Silva',      currency: 'USD',  amount: 950.75,   dueDate: '2025-05-05', status: 'Paid'    },
-  { id: '10', name: 'Joyería Central',    currency: 'EUR',  amount: 3300.00,  dueDate: '2025-09-01', status: 'Pending' },
-  { id: '11', name: 'Luis Fernández',     currency: 'USDT', amount: 500.00,   dueDate: '2025-06-28', status: 'Pending' },
-  { id: '12', name: 'Luis Fernández',     currency: 'BRL',  amount: 3500.00,  dueDate: '2025-06-28', status: 'Pending' },
-]
-
 const PAGE_SIZE = 8
 
 const CURRENCY_LABELS: Record<string, string> = {
@@ -43,6 +28,14 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
   METAL: '',
 }
 
+const CURRENCY_COLORS: Record<string, string> = {
+  EUR:   'bg-blue-100 text-blue-700',
+  USD:   'bg-green-100 text-green-700',
+  BRL:   'bg-yellow-100 text-yellow-700',
+  USDT:  'bg-purple-100 text-purple-700',
+  METAL: 'bg-amber-100 text-amber-700',
+}
+
 export default function CreditorsTable() {
   const [currentPage, setCurrentPage] = useState(1)
   const [search, setSearch] = useState('')
@@ -51,7 +44,7 @@ export default function CreditorsTable() {
 
   const { data, isLoading } = useAcreedores()
 
-  const backendCreditors: Creditor[] = ((data as BackendAcreedor[] | undefined) ?? []).map(
+  const creditors: Creditor[] = ((data as BackendAcreedor[] | undefined) ?? []).flatMap(
     acreedorToFrontend,
   )
 
@@ -114,7 +107,9 @@ export default function CreditorsTable() {
         </div>
 
         {isLoading && (
-          <p className="text-sm text-gray-400 text-center py-6">Cargando...</p>
+          <div className="h-[484px] flex items-center justify-center">
+            <p className="text-sm text-gray-400">Cargando...</p>
+          </div>
         )}
 
         {!isLoading && (
@@ -139,7 +134,7 @@ export default function CreditorsTable() {
               <tbody>
                 {paginated.map((creditor) => (
                   <tr
-                    key={`${creditor.id}-${creditor.currency}`}
+                    key={creditor.saldoId}
                     onClick={() => handleRowClick(creditor)}
                     className="h-14 align-middle border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer"
                   >
@@ -152,7 +147,7 @@ export default function CreditorsTable() {
                       </div>
                     </td>
                     <td className="py-3">
-                      <span className="text-xs font-semibold text-gray-600 bg-gray-100 rounded-full px-2 py-0.5">
+                      <span className={`text-xs font-semibold rounded-full px-2 py-0.5 ${CURRENCY_COLORS[creditor.currency] ?? 'bg-gray-100 text-gray-600'}`}>
                         {creditor.currency}
                       </span>
                     </td>
@@ -173,7 +168,7 @@ export default function CreditorsTable() {
                 ))}
                 {paginated.length === 0 ? (
                   <tr aria-hidden>
-                    <td colSpan={5} className="h-[336px] text-center align-middle text-sm text-gray-400">
+                    <td colSpan={5} className="h-[448px] text-center align-middle text-sm text-gray-400">
                       No se encontraron resultados
                     </td>
                   </tr>

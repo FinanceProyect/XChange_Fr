@@ -87,7 +87,7 @@ export default function EditCreditorModal({ debts, onClose, onSave }: EditCredit
               className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               {debts.map((d) => (
-                <option key={d.id} value={d.currency}>
+                <option key={d.saldoId} value={d.currency}>
                   {d.currency} — {formatAmount(d)}
                   {d.status === 'Paid' ? ' (Pagado)' : ''}
                 </option>

@@ -3,6 +3,7 @@ import ToggleSwitch from './ToggleSwitch'
 interface PartyToggleGroupProps {
   hasDebtor: boolean
   hasCreditor: boolean
+  opType: string
   onToggleDebtor: (v: boolean) => void
   onToggleCreditor: (v: boolean) => void
 }
@@ -10,32 +11,31 @@ interface PartyToggleGroupProps {
 export default function PartyToggleGroup({
   hasDebtor,
   hasCreditor,
+  opType,
   onToggleDebtor,
   onToggleCreditor,
 }: PartyToggleGroupProps) {
+  const isVenta = opType === 'Venta'
+
   return (
     <div className="flex flex-col gap-2">
       <ToggleSwitch
         label="Añadir deudor"
-        description={
-          hasCreditor
-            ? 'Desactiva el acreedor primero'
-            : 'Activa para añadir datos del deudor'
-        }
+        description="Activa para añadir datos del deudor"
         checked={hasDebtor}
         onChange={onToggleDebtor}
-        disabled={hasCreditor}
+        disabled={false}
       />
       <ToggleSwitch
         label="Añadir acreedor"
         description={
-          hasDebtor
-            ? 'Desactiva el deudor primero'
+          isVenta
+            ? 'No disponible en operaciones de venta'
             : 'Activa para añadir datos del acreedor'
         }
         checked={hasCreditor}
         onChange={onToggleCreditor}
-        disabled={hasDebtor}
+        disabled={isVenta}
       />
     </div>
   )
