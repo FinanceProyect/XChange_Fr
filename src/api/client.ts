@@ -2,7 +2,7 @@ import axios from "axios"
 import { showToast } from "../lib/toastBus"
 
 export const apiClient = axios.create({
-  baseURL: "http://localhost:8080/api/",
+  baseURL: "api/",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

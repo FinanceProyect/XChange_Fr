@@ -1,13 +1,18 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { useCreateDeudor } from "../../queries/deudores.query";
+import DatePicker from "../operations/AddOperationProgress/DatePicker";
+
+const CURRENCIES = ["USD", "EUR", "BRL", "USDT", "METAL"];
 
 interface FormState {
   nombre: string;
+  moneda: string;
   importe: string;
+  fechaVencimiento: string;
 }
 
-const EMPTY: FormState = { nombre: "", importe: "" };
+const EMPTY: FormState = { nombre: "", moneda: "", importe: "", fechaVencimiento: "" };
 
 interface AddDebtorModalProps {
   onClose: () => void;
@@ -39,7 +44,10 @@ export default function AddDebtorModal({
 
   const isValid =
     form.nombre.trim() !== "" &&
-    form.importe !== "";
+    form.moneda !== "" &&
+    form.importe !== "" &&
+    parseFloat(form.importe) > 0 &&
+    form.fechaVencimiento !== "";
 
   const set = (field: keyof FormState, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -48,9 +56,15 @@ export default function AddDebtorModal({
     if (!isValid) return;
     createDeudor(
       {
-        nombre: form.nombre,
-        importe: parseFloat(form.importe),
+        nombre: form.nombre.trim(),
         fecha: formatLocalDateTime(),
+        deudas: [
+          {
+            moneda: form.moneda,
+            monto: parseFloat(form.importe),
+            fechaVencimiento: form.fechaVencimiento,
+          },
+        ],
       },
       {
         onSuccess: () => {
@@ -97,6 +111,21 @@ export default function AddDebtorModal({
             />
           </div>
 
+          {/* Moneda */}
+          <div>
+            <label className="text-xs text-gray-500 mb-1 block">Moneda</label>
+            <select
+              value={form.moneda}
+              onChange={(e) => set("moneda", e.target.value)}
+              className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              <option value="">Seleccionar moneda</option>
+              {CURRENCIES.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+
           {/* Importe */}
           <div>
             <label className="text-xs text-gray-500 mb-1 block">Importe</label>
@@ -108,6 +137,17 @@ export default function AddDebtorModal({
               value={form.importe}
               onChange={(e) => set("importe", e.target.value)}
               className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Fecha de vencimiento */}
+          <div>
+            <label className="text-xs text-gray-500 mb-1 block">
+              Fecha de vencimiento
+            </label>
+            <DatePicker
+              value={form.fechaVencimiento}
+              onChange={(v) => set("fechaVencimiento", v)}
             />
           </div>
         </div>

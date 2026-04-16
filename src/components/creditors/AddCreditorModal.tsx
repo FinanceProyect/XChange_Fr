@@ -4,15 +4,17 @@ import { useCreateAcreedor } from '../../queries/acreedores.query'
 import DatePicker from '../operations/AddOperationProgress/DatePicker'
 
 const CURRENCIES = ['EUR', 'USD', 'BRL', 'USDT', 'METAL']
+const TIPO_OPERACION = ['COMPRA', 'VENTA']
 
 interface FormState {
   nombre: string
   moneda: string
   importe: string
+  tipoOperacion: string
   fechaVencimiento: string
 }
 
-const EMPTY: FormState = { nombre: '', moneda: '', importe: '', fechaVencimiento: '' }
+const EMPTY: FormState = { nombre: '', moneda: '', importe: '', tipoOperacion: '', fechaVencimiento: '' }
 
 interface AddCreditorModalProps {
   onClose: () => void
@@ -34,7 +36,7 @@ export default function AddCreditorModal({ onClose, onSave }: AddCreditorModalPr
     form.moneda !== '' &&
     form.importe !== '' &&
     parseFloat(form.importe) > 0 &&
-    form.fechaVencimiento !== ''
+    form.tipoOperacion !== ''
 
   const set = (field: keyof FormState, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -45,10 +47,14 @@ export default function AddCreditorModal({ onClose, onSave }: AddCreditorModalPr
     createAcreedor(
       {
         nombre: form.nombre.trim(),
-        moneda: form.moneda,
-        importe: parseFloat(form.importe),
-        fechaVencimiento: form.fechaVencimiento,
-        estado: 'PENDIENTE',
+        ...(form.fechaVencimiento ? { fechaVencimiento: form.fechaVencimiento } : {}),
+        saldos: [
+          {
+            codigoDivisa: form.moneda,
+            monto: parseFloat(form.importe),
+            tipoOperacion: form.tipoOperacion,
+          },
+        ],
       },
       {
         onSuccess: () => {
@@ -123,15 +129,28 @@ export default function AddCreditorModal({ onClose, onSave }: AddCreditorModalPr
           </div>
 
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">Fecha de vencimiento</label>
+            <label className="text-xs text-gray-500 mb-1 block">Tipo de operación</label>
+            <select
+              value={form.tipoOperacion}
+              onChange={(e) => set('tipoOperacion', e.target.value)}
+              className={inputClass(submitted && form.tipoOperacion === '')}
+            >
+              <option value="">Seleccionar tipo</option>
+              {TIPO_OPERACION.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+            {submitted && form.tipoOperacion === '' && (
+              <p className="text-xs text-red-500 mt-0.5">Selecciona un tipo de operación</p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs text-gray-500 mb-1 block">Fecha de vencimiento (opcional)</label>
             <DatePicker
               value={form.fechaVencimiento}
               onChange={(v) => set('fechaVencimiento', v)}
-              error={submitted && form.fechaVencimiento === ''}
             />
-            {submitted && form.fechaVencimiento === '' && (
-              <p className="text-xs text-red-500 mt-0.5">Selecciona una fecha</p>
-            )}
           </div>
         </div>
 

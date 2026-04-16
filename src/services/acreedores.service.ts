@@ -5,6 +5,16 @@ export const getAll = async (params?: unknown) => {
   return response.data
 }
 
+export const getPendientes = async () => {
+  const response = await apiClient.get('/acreedores/pendientes')
+  return response.data
+}
+
+export const getSugerencias = async (nombre: string) => {
+  const response = await apiClient.get('/acreedores/sugerencias', { params: { nombre } })
+  return response.data
+}
+
 export const getById = async (id: string) => {
   const response = await apiClient.get(`/acreedores/${id}`)
   return response.data
@@ -15,13 +25,11 @@ export const create = async (data: unknown) => {
   return response.data
 }
 
-export const update = async (id: string, data: unknown) => {
-  const response = await apiClient.put(`/acreedores/${id}`, data)
-  return response.data
-}
-
-export const pagar = async (id: string, importe: number) => {
-  const response = await apiClient.put('/acreedores/pagar', { id, importe })
+export const pagar = async (data: {
+  id: string
+  pagos: { codigoDivisa: string; monto: number }[]
+}) => {
+  const response = await apiClient.put('/acreedores/pagar', data)
   return response.data
 }
 

@@ -24,7 +24,7 @@ export default function Dashboard() {
   const balanceTotal = balancesData?.balanceTotal;
 
   // Orden personalizado: ARS, USD, EUR, USDT, BRL (ARS siempre primero si existe)
-  const currencyOrder = ["ARS", "USD", "EUR", "USDT", "BRL"];
+  const currencyOrder = ["ARS", "USD", "EUR", "USDT", "BRL", "PTRANS"];
   const balances = baseBalances.slice().sort((a, b) => {
     const idxA = currencyOrder.indexOf(a.currency);
     const idxB = currencyOrder.indexOf(b.currency);

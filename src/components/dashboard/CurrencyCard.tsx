@@ -12,6 +12,7 @@ const accentColors: Record<string, string> = {
   EUR: "#378ADD",
   USDT: "#639922",
   BRL: "#BA7517",
+  PTRANS: "#7C3AED",
 };
 
 const currencyFlags: Record<string, string> = {
@@ -20,6 +21,11 @@ const currencyFlags: Record<string, string> = {
   EUR: "🇪🇺",
   BRL: "🇧🇷",
   USDT: "₮",
+  PTRANS: "₱",
+};
+
+const currencyDisplayNames: Record<string, string> = {
+  PTRANS: "Pesos Transferencia",
 };
 
 const fallbackAccent = "#94A3B8";
@@ -43,7 +49,7 @@ export default function CurrencyCard({ currency, symbol, amount }: CurrencyCardP
           className="text-[11px] font-semibold uppercase tracking-widest"
           style={{ color: accent }}
         >
-          {currency}
+          {currencyDisplayNames[currency] ?? currency}
         </span>
         <span className="text-base leading-none">{flag}</span>
       </div>

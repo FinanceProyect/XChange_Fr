@@ -10,21 +10,6 @@ import {
 } from '../../adapters/acreedores.adapter'
 import { formatDateValue } from '../../utils/date'
 
-const MOCK_CREDITORS: Creditor[] = [
-  { id: '1',  name: 'Banco Santander',    currency: 'EUR',  amount: 4200.00,  dueDate: '2025-06-15', status: 'Pending' },
-  { id: '2',  name: 'Banco Santander',    currency: 'USD',  amount: 1800.00,  dueDate: '2025-06-15', status: 'Pending' },
-  { id: '3',  name: 'Carlos Méndez',      currency: 'USD',  amount: 1500.50,  dueDate: '2025-05-30', status: 'Pending' },
-  { id: '4',  name: 'Carlos Méndez',      currency: 'EUR',  amount: 600.00,   dueDate: '2025-05-30', status: 'Paid'    },
-  { id: '5',  name: 'Proveedor Joyas SL', currency: 'EUR',  amount: 8750.00,  dueDate: '2025-07-01', status: 'Pending' },
-  { id: '6',  name: 'María López',        currency: 'USDT', amount: 320.00,   dueDate: '2025-04-20', status: 'Paid'    },
-  { id: '7',  name: 'Distribuidora BRL',  currency: 'BRL',  amount: 12000.00, dueDate: '2025-08-10', status: 'Pending' },
-  { id: '8',  name: 'Distribuidora BRL',  currency: 'USD',  amount: 2200.00,  dueDate: '2025-08-10', status: 'Pending' },
-  { id: '9',  name: 'Roberto Silva',      currency: 'USD',  amount: 950.75,   dueDate: '2025-05-05', status: 'Paid'    },
-  { id: '10', name: 'Joyería Central',    currency: 'EUR',  amount: 3300.00,  dueDate: '2025-09-01', status: 'Pending' },
-  { id: '11', name: 'Luis Fernández',     currency: 'USDT', amount: 500.00,   dueDate: '2025-06-28', status: 'Pending' },
-  { id: '12', name: 'Luis Fernández',     currency: 'BRL',  amount: 3500.00,  dueDate: '2025-06-28', status: 'Pending' },
-]
-
 const PAGE_SIZE = 8
 
 const CURRENCY_LABELS: Record<string, string> = {
@@ -51,10 +36,9 @@ export default function CreditorsTable() {
 
   const { data, isLoading } = useAcreedores()
 
-  const backendCreditors: Creditor[] = ((data as BackendAcreedor[] | undefined) ?? []).map(
+  const creditors: Creditor[] = (Array.isArray(data) ? (data as BackendAcreedor[]) : []).flatMap(
     acreedorToFrontend,
   )
-  const creditors: Creditor[] = backendCreditors.length > 0 ? backendCreditors : MOCK_CREDITORS
 
   const availableCurrencies = Array.from(new Set(creditors.map((c) => c.currency))).filter(Boolean)
 
@@ -79,7 +63,7 @@ export default function CreditorsTable() {
   }
 
   const handleRowClick = (row: Creditor) => {
-    const allDebts = creditors.filter((c) => c.name === row.name)
+    const allDebts = creditors.filter((c) => c.id === row.id)
     setEditingDebts(allDebts)
   }
 
@@ -133,7 +117,7 @@ export default function CreditorsTable() {
               <tbody>
                 {paginated.map((creditor) => (
                   <tr
-                    key={creditor.id}
+                    key={`${creditor.id}-${creditor.currency}`}
                     onClick={() => handleRowClick(creditor)}
                     className="h-14 align-middle border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer"
                   >

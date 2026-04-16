@@ -5,6 +5,7 @@ export const currencyBalances = [
   { currency: 'USDT', symbol: '₮',  amount: 750   },
   { currency: 'BRL',  symbol: 'R$', amount: 3000  },
   { currency: 'ARS',  symbol: '$AR', amount: 0 },
+  { currency: 'PTRANS', symbol: '$T', amount: 0 },
 ]
 
 
@@ -52,6 +53,7 @@ export interface Debtor {
   avatar: string
   amount: string
   status: DebtorStatus
+  moneda?: string
 }
 
 export const debtorsData: Debtor[] = [

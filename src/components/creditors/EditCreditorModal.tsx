@@ -40,7 +40,7 @@ export default function EditCreditorModal({ debts, onClose, onSave }: EditCredit
   const handleSave = () => {
     if (!isValid) return
     pagarAcreedor(
-      { id: selectedDebt.id, importe: importeNumber },
+      { id: selectedDebt.id, pagos: [{ codigoDivisa: selectedCurrency, monto: importeNumber }] },
       {
         onSuccess: () => {
           showToast({ message: 'Pago al acreedor registrado correctamente', variant: 'success' })

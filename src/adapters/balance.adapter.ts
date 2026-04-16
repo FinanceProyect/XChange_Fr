@@ -21,6 +21,7 @@ const symbolMap: Record<string, string> = {
   USD: "$",
   BRL: "R$",
   USDT: "₮",
+  PTRANS: "$T",
 }
 
 const isBackendBalance = (value: unknown): value is BackendBalance => {

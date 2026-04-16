@@ -35,7 +35,7 @@ export default function DebtorsTable() {
   const { data, isLoading } = useDeudores();
   const { mutate: pagarDeudor, isPending: isPaying } = usePagarDeudor();
 
-  const debtors: Debtor[] = ((data as BackendDeudor[] | undefined) ?? [])
+  const debtors: Debtor[] = (Array.isArray(data) ? (data as BackendDeudor[]) : [])
     .map(deudorToFrontend)
     .sort((a, b) => parseDateValue(b.date) - parseDateValue(a.date));
 
@@ -69,7 +69,7 @@ export default function DebtorsTable() {
     setPayingId(debtor.id);
 
     pagarDeudor(
-      { id: debtor.id, importe: amountValue },
+      { id: debtor.id, pagos: [{ moneda: debtor.moneda ?? 'USD', monto: amountValue }] },
       {
         onSuccess: (updated) => {
           const nextState = (

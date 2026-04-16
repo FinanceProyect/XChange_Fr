@@ -43,7 +43,7 @@ export default function EditDebtorModal({
     pagarDeudor(
       {
         id: debtor.id,
-        importe: importeNumber,
+        pagos: [{ moneda: debtor.moneda ?? 'USD', monto: importeNumber }],
       },
       {
         onSuccess: (updated) => {

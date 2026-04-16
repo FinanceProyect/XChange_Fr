@@ -66,6 +66,16 @@ const colorMap: Record<string, Palette> = {
     glow: "",
     dot: "bg-purple-500",
   },
+  PTRANS: {
+    panel: "bg-white",
+    border: "border-violet-200",
+    accent: "text-violet-600",
+    accentSoft: "",
+    badge: "",
+    badgeText: "",
+    glow: "",
+    dot: "bg-violet-500",
+  },
 };
 
 const fallback: Palette = {

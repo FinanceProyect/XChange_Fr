@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   create,
-  extenderFecha,
   getAll,
   getById,
   pagar,
@@ -51,8 +50,8 @@ export const usePagarDeudor = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ id, importe }: { id: string; importe: number }) =>
-      pagar(id, importe),
+    mutationFn: (data: { id: string; pagos: { moneda: string; monto: number }[] }) =>
+      pagar(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["deudores"] })
     },
@@ -64,18 +63,6 @@ export const useDeleteDeudor = () => {
 
   return useMutation({
     mutationFn: (id: string) => remove(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["deudores"] })
-    },
-  })
-}
-
-export const useExtenderFecha = () => {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: ({ id, nuevaFecha }: { id: string; nuevaFecha: string }) =>
-      extenderFecha(id, nuevaFecha),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["deudores"] })
     },

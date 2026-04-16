@@ -13,6 +13,7 @@ const currencyLabels: Record<string, string> = {
   USD: "Dólares (USD)",
   BRL: "Reales Brasileños (BRL)",
   USDT: "Tether (USDT)",
+  PTRANS: "Pesos Transferencia (PTRANS)",
 };
 
 const currencySymbols: Record<string, string> = {
@@ -21,6 +22,7 @@ const currencySymbols: Record<string, string> = {
   USD: "$",
   BRL: "R$",
   USDT: "₮",
+  PTRANS: "$T",
 };
 
 export default function Settings() {
@@ -34,6 +36,7 @@ export default function Settings() {
         saldoUsd: number;
         saldoBrl: number;
         saldoUsdt: number;
+        saldoPtrans: number;
         carteraDefecto: string;
         monedaDefecto: string;
         idioma: string;
@@ -61,10 +64,11 @@ export default function Settings() {
     setLanguage(backendData.idioma);
     setBalances({
       ARS: backendData.saldoPesos?.toString(),
-      EUR: backendData.saldoEur.toString(),
-      USD: backendData.saldoUsd.toString(),
-      BRL: backendData.saldoBrl.toString(),
-      USDT: backendData.saldoUsdt.toString(),
+      EUR: backendData.saldoEur?.toString(),
+      USD: backendData.saldoUsd?.toString(),
+      BRL: backendData.saldoBrl?.toString(),
+      USDT: backendData.saldoUsdt?.toString(),
+      PTRANS: backendData.saldoPtrans?.toString(),
     });
   }, [backendData]);
 
@@ -77,6 +81,7 @@ export default function Settings() {
     saldoUsd: parseFloat(balances.USD || "0"),
     saldoBrl: parseFloat(balances.BRL || "0"),
     saldoUsdt: parseFloat(balances.USDT || "0"),
+    saldoPtrans: parseFloat(balances.PTRANS || "0"),
     carteraDefecto: defaultWallet,
     monedaDefecto: defaultCurrency,
     idioma: language,
