@@ -3,12 +3,15 @@ import { UserPlus, CheckCircle, Download, Pencil, Check } from 'lucide-react'
 import Button from '../ui/Button'
 import Badge from '../ui/Badge'
 import Pagination from '../ui/Pagination'
-import { debtorsData } from '../../data/mockData'
+import { useDeudores } from '../../queries/deudores.query'
+import { deudorToFrontend, type BackendDeudor } from '../../adapters/deudores.adapter'
 
 const PAGE_SIZE = 4
 
 export default function DebtorsTable() {
   const [currentPage, setCurrentPage] = useState(1)
+  const { data } = useDeudores()
+  const debtorsData = (data as BackendDeudor[] | undefined ?? []).flatMap(deudorToFrontend)
   const totalPages = Math.ceil(debtorsData.length / PAGE_SIZE)
 
   const paginated = debtorsData.slice(

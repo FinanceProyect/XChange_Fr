@@ -48,10 +48,14 @@ export default function AddCreditorModal({ onClose, onSave }: AddCreditorModalPr
     createAcreedor(
       {
         nombre: form.nombre.trim(),
-        nombreDivisa: form.moneda,
-        monto: parseFloat(form.importe),
-        tipoOperacion: form.tipoOperacion,
-        ...(form.fechaVencimiento ? { fechaOperacion: toLocalISODateTime(form.fechaVencimiento) } : {}),
+        ...(form.fechaVencimiento ? { fechaVencimiento: toLocalISODateTime(form.fechaVencimiento) } : {}),
+        saldos: [
+          {
+            codigoDivisa: form.moneda,
+            monto: parseFloat(form.importe),
+            tipoOperacion: form.tipoOperacion,
+          },
+        ],
       },
       {
         onSuccess: () => {

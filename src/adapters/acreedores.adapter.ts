@@ -1,6 +1,6 @@
 export interface BackendSaldo {
   id: string
-  nombreDivisa: string
+  codigoDivisa: string
   monto: number
   fechaOperacion: string
   tipoOperacion: string
@@ -30,7 +30,7 @@ export function acreedorToFrontend(raw: BackendAcreedor): Creditor[] {
     id: raw.id,
     saldoId: saldo.id,
     name: raw.nombre ?? '',
-    currency: saldo.nombreDivisa ?? '',
+    currency: saldo.codigoDivisa ?? '',
     amount: Number(saldo.monto ?? 0),
     dueDate: saldo.fechaOperacion ?? '',
     status: saldo.estado.toUpperCase() === 'PAGADO' ? 'Paid' : 'Pending',

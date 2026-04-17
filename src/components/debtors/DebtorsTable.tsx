@@ -2,11 +2,11 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import Pagination from "../ui/Pagination";
 import EditDebtorModal from "./EditDebtorModal";
-import type { Debtor } from "../../data/mockData";
 import { useDeudores, usePagarDeudor } from "../../queries/deudores.query";
 import {
   deudorToFrontend,
   type BackendDeudor,
+  type Debtor,
 } from "../../adapters/deudores.adapter";
 import { showToast } from "../../lib/toastBus";
 import {
@@ -44,7 +44,7 @@ export default function DebtorsTable() {
   const { mutate: pagarDeudor, isPending: isPaying } = usePagarDeudor();
 
   const debtors: Debtor[] = (Array.isArray(data) ? (data as BackendDeudor[]) : [])
-    .map(deudorToFrontend)
+    .flatMap(deudorToFrontend)
     .sort((a, b) => parseDateValue(b.date) - parseDateValue(a.date));
 
   const filtered = debtors.filter((d) =>
@@ -77,7 +77,7 @@ export default function DebtorsTable() {
     setPayingId(debtor.id);
 
     pagarDeudor(
-      { id: debtor.id, monto: amountValue },
+      { id: debtor.deudorId ?? debtor.id, pagos: [{ moneda: debtor.moneda ?? '', monto: amountValue }] },
       {
         onSuccess: (updated) => {
           const nextState = (

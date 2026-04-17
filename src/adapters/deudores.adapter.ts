@@ -1,14 +1,30 @@
-import type { Debtor } from '../data/mockData'
+export type DebtorStatus = 'Overdue' | 'Pending' | 'Paid'
 
-// Shape devuelta por el backend en GET /deudores (array plano de deudas)
+export interface Debtor {
+  id: string
+  deudorId?: string
+  date: string
+  name: string
+  avatar: string
+  amount: string
+  status: DebtorStatus
+  moneda?: string
+}
+
+export interface BackendDeuda {
+  id: string
+  moneda: string
+  montoPendiente: number
+  fechaVencimiento: string
+  fecha?: string
+  estado: string
+}
+
+// Shape devuelta por el backend en GET /deudores
 export interface BackendDeudor {
   id: string
-  deudorId: string
-  nombreDeudor: string
-  nombreDivisa: string
-  monto: number
-  fecha: string
-  estado: string
+  nombre: string
+  deudas: BackendDeuda[]
 }
 
 function buildAvatar(nombre: string): string {
@@ -26,14 +42,16 @@ function mapEstado(estado: string): Debtor['status'] {
   return 'Pending'
 }
 
-export function deudorToFrontend(raw: BackendDeudor): Debtor {
-  return {
-    id:     raw.id,
-    name:   raw.nombreDeudor ?? '',
-    avatar: buildAvatar(raw.nombreDeudor ?? ''),
-    date:   raw.fecha ?? '',
-    amount: String(raw.monto ?? 0),
-    status: mapEstado(raw.estado),
-    moneda: raw.nombreDivisa ?? '',
-  }
+// Returns one row per deuda (same pattern as acreedorToFrontend)
+export function deudorToFrontend(raw: BackendDeudor): Debtor[] {
+  return raw.deudas.map((deuda) => ({
+    id:       deuda.id,
+    deudorId: raw.id,
+    name:     raw.nombre ?? '',
+    avatar:   buildAvatar(raw.nombre ?? ''),
+    date:     deuda.fechaVencimiento ?? deuda.fecha ?? '',
+    amount:   String(deuda.montoPendiente ?? 0),
+    status:   mapEstado(deuda.estado),
+    moneda:   deuda.moneda ?? '',
+  }))
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-import type { Debtor } from "../../data/mockData";
+import type { Debtor } from "../../adapters/deudores.adapter";
 import { usePagarDeudor } from "../../queries/deudores.query";
 import { showToast } from "../../lib/toastBus";
 
@@ -42,8 +42,8 @@ export default function EditDebtorModal({
 
     pagarDeudor(
       {
-        id: debtor.id,
-        pagos: [{ moneda: debtor.moneda ?? 'USD', monto: importeNumber }],
+        id: debtor.deudorId ?? debtor.id,
+        pagos: [{ moneda: debtor.moneda ?? '', monto: importeNumber }],
       },
       {
         onSuccess: (updated) => {

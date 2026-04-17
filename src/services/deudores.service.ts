@@ -20,7 +20,10 @@ export const update = async (id: string, data: unknown) => {
   return response.data
 }
 
-export const pagar = async (data: { id: string; monto: number }) => {
+export const pagar = async (data: {
+  id: string
+  pagos: { moneda: string; monto: number }[]
+}) => {
   const response = await apiClient.put("/deudores/pagar", data)
   return response.data
 }

@@ -50,7 +50,7 @@ export const usePagarDeudor = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: { id: string; monto: number }) => pagar(data),
+    mutationFn: (data: { id: string; pagos: { moneda: string; monto: number }[] }) => pagar(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["deudores"] })
     },

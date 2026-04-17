@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { useDashboardCurrencyBalances } from "../queries/dashboard.query";
-import { useCreateOperacion } from "../queries/operaciones.query";
+
 import { Plus } from "lucide-react";
 import OperationsFilters from "../components/operations/OperationsFilters";
 import OperationsTable from "../components/operations/OperationsTable";
 import AddOperationProgress from "../components/operations/AddOperationProgress/AddOperationProgress";
-import type { OperationForm } from "../components/operations/AddOperationProgress/operation.types";
 
 import Toast from "../components/ui/Toast";
 import BalanceAlertOverlay from "../components/ui/BalanceAlertOverlay";
@@ -26,27 +25,13 @@ export default function Operations() {
   const [currency, setCurrency] = useState<OperationCurrency | "">("");
   const [type, setType] = useState<OperationType | "">("");
 
-  const { mutate: createOperacion } = useCreateOperacion();
-
   const handleReset = () => {
     setCurrency("");
     setType("");
   };
 
-  const handleSave = (form: OperationForm) => {
-    const payload = {
-      tipo: form.opType.toUpperCase(),
-      activoId: form.currency,
-      monto:
-        form.currency === "METAL"
-          ? parseFloat(form.weight)
-          : parseFloat(form.quantity),
-      tasaCambio: parseFloat(form.quote),
-      ...(form.currency === "METAL" && form.karat
-        ? { quilataje: form.karat }
-        : {}),
-    };
-    createOperacion(payload, { onSuccess: () => setShowToast(true) });
+  const handleSave = () => {
+    setShowToast(true);
   };
 
   if (isLoading) {

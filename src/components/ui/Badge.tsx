@@ -1,4 +1,4 @@
-import type { DebtorStatus } from '../../data/mockData'
+import type { DebtorStatus } from '../../adapters/deudores.adapter'
 
 interface BadgeProps {
   status: DebtorStatus
