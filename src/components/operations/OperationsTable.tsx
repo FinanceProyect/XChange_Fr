@@ -12,7 +12,15 @@ const currencySymbol: Record<OperationCurrency, string> = {
   USD:   '$',
   BRL:   'R$',
   USDT:  '₮',
-  METAL: 'g',
+  METAL: 'gr',
+}
+
+const currencyLabel: Record<OperationCurrency, string> = {
+  EUR:   'EUR',
+  USD:   'USD',
+  BRL:   'BRL',
+  USDT:  'USDT',
+  METAL: 'Oro',
 }
 
 const currencyColors: Record<OperationCurrency, string> = {
@@ -162,7 +170,7 @@ export default function OperationsTable({ currency, type }: OperationsTableProps
                       </td>
                       <td className="py-3 px-3">
                         <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${currencyColors[op.currency]}`}>
-                          {isMetal ? '' : `${sym} `}{op.currency}
+                          {isMetal ? '' : `${sym} `}{currencyLabel[op.currency]}
                           {op.quilataje ? ` ${op.quilataje}` : ''}
                         </span>
                       </td>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { CheckCircle } from "lucide-react";
 
 interface MarkAsPaidButtonProps {
@@ -31,13 +31,13 @@ export default function MarkAsPaidButton({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
-  const handleToggle = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleToggle = (event: ReactMouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     if (disabled || loading) return;
     setOpen((prev) => !prev);
   };
 
-  const handleConfirm = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleConfirm = (event: ReactMouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     if (loading) return;
     setOpen(false);

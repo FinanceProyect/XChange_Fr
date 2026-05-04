@@ -8,7 +8,7 @@ const currencySymbol: Record<OperationCurrency, string> = {
   USD:   '$',
   BRL:   'R$',
   USDT:  '₮',
-  METAL: 'Oro',
+  METAL: 'gr',
 }
 
 const currencyColors: Record<OperationCurrency, string> = {
@@ -66,7 +66,7 @@ export default function RecentOperations({ operations }: RecentOperationsProps) 
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs font-medium text-gray-800">{op.type}</span>
                     <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${currencyColors[op.currency]}`}>
-                      {sym}{op.currency}
+                      {op.currency !== 'METAL' && sym}{currencyLabel[op.currency]}
                     </span>
                   </div>
                   <p className="text-xs text-gray-400 mt-0.5">{op.date}</p>
