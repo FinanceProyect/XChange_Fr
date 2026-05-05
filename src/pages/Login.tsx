@@ -1,22 +1,31 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, Lock, Mail, TrendingUp, ArrowRightLeft, Gem } from 'lucide-react'
+import { useAuth } from '../context/auth'
+import { loginRequest } from '../services/auth.service'
+import { showToast } from '../lib/toastBus'
 
 export default function Login() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      const token = await loginRequest({ email, password, rememberMe })
+      login(token)
       navigate('/')
-    }, 800)
+    } catch {
+      showToast({ message: 'Credenciales incorrectas. Verificá tu email y contraseña.', variant: 'error' })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

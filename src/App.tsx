@@ -8,6 +8,7 @@ import Exchanges from "./pages/Exchanges";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import GlobalToastHost from "./components/ui/GlobalToastHost";
+import ProtectedRoute from "./components/routes/ProtectedRoute";
 
 function App() {
   return (
@@ -16,20 +17,22 @@ function App() {
       <Route
         path="/*"
         element={
-          <div className="min-h-screen bg-gray-50">
-            <Navbar />
-            <main className="max-w-[1320px] mx-auto">
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/operations" element={<Operations />} />
-                <Route path="/debtors" element={<Debtors />} />
-                <Route path="/creditors" element={<Creditors />} />
-                <Route path="/exchanges" element={<Exchanges />} />
-                <Route path="/settings" element={<Settings />} />
-              </Routes>
-            </main>
-            <GlobalToastHost />
-          </div>
+          <ProtectedRoute>
+            <div className="min-h-screen bg-gray-50">
+              <Navbar />
+              <main className="max-w-[1320px] mx-auto">
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/operations" element={<Operations />} />
+                  <Route path="/debtors" element={<Debtors />} />
+                  <Route path="/creditors" element={<Creditors />} />
+                  <Route path="/exchanges" element={<Exchanges />} />
+                  <Route path="/settings" element={<Settings />} />
+                </Routes>
+              </main>
+              <GlobalToastHost />
+            </div>
+          </ProtectedRoute>
         }
       />
     </Routes>

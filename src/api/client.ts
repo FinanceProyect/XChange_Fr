@@ -4,28 +4,87 @@ import { showToast } from "../lib/toastBus"
 export const apiClient = axios.create({
   baseURL: "/api/",
   timeout: 10000,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 })
 
-// TODO: Add request interceptor to attach auth token
-// apiClient.interceptors.request.use((config) => {
-//   const token = getAuthToken()
-//   if (token) config.headers.Authorization = `Bearer ${token}`
-//   return config
-// })
+// Registered from AuthProvider to avoid circular imports
+let _getToken: (() => string | null) | null = null
+let _doRefresh: (() => Promise<string>) | null = null
+
+export function setTokenGetter(fn: () => string | null) {
+  _getToken = fn
+}
+
+export function setRefreshCallback(fn: () => Promise<string>) {
+  _doRefresh = fn
+}
+
+apiClient.interceptors.request.use((config) => {
+  const token = _getToken?.()
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
+
+// Queue for concurrent requests that arrive while a refresh is in progress
+let isRefreshing = false
+let refreshQueue: Array<(token: string) => void> = []
 
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const message =
-      error.response?.data?.message ??
-      error.message ??
-      "Ocurrió un error inesperado";
+    const originalRequest = error.config
 
-    showToast({ message, variant: "error" });
+    // Handle 401: attempt token refresh once (skip if already retried or is a refresh call)
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes("refresh")
+    ) {
+      originalRequest._retry = true
 
-    return Promise.reject(error);
-  },
+      if (!_doRefresh) {
+        window.location.replace("/login")
+        return Promise.reject(error)
+      }
+
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          refreshQueue.push((token: string) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`
+            resolve(apiClient(originalRequest))
+          })
+        })
+      }
+
+      isRefreshing = true
+
+      try {
+        const newToken = await _doRefresh()
+        refreshQueue.forEach((cb) => cb(newToken))
+        refreshQueue = []
+        originalRequest.headers.Authorization = `Bearer ${newToken}`
+        return apiClient(originalRequest)
+      } catch {
+        refreshQueue = []
+        window.location.replace("/login")
+        return Promise.reject(error)
+      } finally {
+        isRefreshing = false
+      }
+    }
+
+    // Show toast for all non-401 errors (401 is handled silently above)
+    if (error.response?.status !== 401) {
+      const message =
+        error.response?.data?.message ??
+        error.message ??
+        "Ocurrió un error inesperado"
+      showToast({ message, variant: "error" })
+    }
+
+    return Promise.reject(error)
+  }
 )
