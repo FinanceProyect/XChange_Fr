@@ -37,9 +37,10 @@ export default function OperationsFilters({
           onChange={(e) => onTypeChange(e.target.value as OperationType | '')}
           className="text-sm border border-gray-200 rounded-md px-3 py-1.5 text-gray-700 bg-white cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
-          <option value="">Compra y Venta</option>
+          <option value="">Todos los tipos</option>
           <option value="Compra">Compra</option>
           <option value="Venta">Venta</option>
+          <option value="Intercambio">Intercambio</option>
         </select>
       </div>
       <button

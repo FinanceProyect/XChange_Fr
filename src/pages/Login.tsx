@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, Lock, Mail, TrendingUp, ArrowRightLeft, Gem } from 'lucide-react'
-import { useAuth } from '../context/auth'
+import { useAuth } from '../context/useAuth'
 import { loginRequest } from '../services/auth.service'
 import { showToast } from '../lib/toastBus'
 

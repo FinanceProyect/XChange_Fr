@@ -183,7 +183,7 @@ export const openPositionsData: OpenPosition[] = [
 // ── Operations ───────────────────────────────────────────────
 
 export type OperationCurrency = 'EUR' | 'USD' | 'BRL' | 'USDT' | 'METAL'
-export type OperationType = 'Compra' | 'Venta'
+export type OperationType = 'Compra' | 'Venta' | 'Intercambio'
 
 export interface Operation {
   id: string
@@ -197,6 +197,9 @@ export interface Operation {
   sellPrice: number
   quilataje?: string
   peso?: number
+  // Solo en intercambios: lo que recibe el cliente
+  salidaCurrency?: OperationCurrency
+  salidaAmount?: number
 }
 
 export const operationsData: Operation[] = [

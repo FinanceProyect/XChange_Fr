@@ -1,8 +1,11 @@
 import type { OperationForm } from './operation.types'
+import { formatCotizacionIntercambio } from '../../../utils/intercambio'
 
 interface Step3SummaryProps {
   form: OperationForm
   isMetal: boolean
+  isExchange: boolean
+  exchangeOutput: number | null
 }
 
 interface SummaryRowProps {
@@ -19,7 +22,24 @@ function SummaryRow({ label, value }: SummaryRowProps) {
   )
 }
 
-export default function Step3Summary({ form, isMetal }: Step3SummaryProps) {
+export default function Step3Summary({ form, isMetal, isExchange, exchangeOutput }: Step3SummaryProps) {
+  if (isExchange) {
+    return (
+      <div className="flex flex-col gap-1 bg-gray-50 rounded-lg p-4">
+        <SummaryRow label="Tipo" value={form.opType} />
+        <SummaryRow label="Cliente entrega" value={`${form.exchangeAmount} ${form.exchangeFrom}`} />
+        <SummaryRow
+          label="Cotización"
+          value={formatCotizacionIntercambio(form.exchangeFrom, form.exchangeTo, parseFloat(form.exchangeQuote))}
+        />
+        <SummaryRow
+          label="Cliente recibe"
+          value={`${(exchangeOutput ?? 0).toLocaleString('es-AR')} ${form.exchangeTo}`}
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-1 bg-gray-50 rounded-lg p-4">
       <SummaryRow label="Tipo" value={form.opType} />

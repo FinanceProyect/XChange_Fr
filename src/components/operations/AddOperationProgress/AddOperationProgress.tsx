@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
+import { isAxiosError } from 'axios'
 import { X } from 'lucide-react'
 import type { StepId } from './operation.types'
 import useOperationForm from './useOperationForm'
@@ -8,7 +9,16 @@ import Step1Operation from './Step1Operation'
 import Step2Parties from './Step2Parties'
 import Step3Summary from './Step3Summary'
 import { useCreateOperacion } from '../../../queries/operaciones.query'
+import { useCreateIntercambio } from '../../../queries/intercambios.query'
 import { toLocalISODateTime } from '../../../utils/date'
+
+const backendErrorMessage = (error: unknown, fallback: string) => {
+  if (isAxiosError(error)) {
+    const data = error.response?.data as { error?: string; message?: string } | undefined
+    return data?.error ?? data?.message ?? fallback
+  }
+  return fallback
+}
 
 const formatLocalDateTime = () => {
   const now = new Date()
@@ -29,7 +39,7 @@ const formatLocalDateTime = () => {
 interface AddOperationProgressProps {
   isOpen: boolean
   onClose: () => void
-  onSave: () => void
+  onSave: (message?: string) => void
 }
 
 export default function AddOperationProgress({ isOpen, onClose, onSave }: AddOperationProgressProps) {
@@ -41,6 +51,8 @@ export default function AddOperationProgress({ isOpen, onClose, onSave }: AddOpe
     goBack,
     needsStep2,
     isMetal,
+    isExchange,
+    exchangeOutput,
     computedAmount,
     isCurrentStepValid,
     errors,
@@ -48,11 +60,52 @@ export default function AddOperationProgress({ isOpen, onClose, onSave }: AddOpe
     reset,
   } = useOperationForm()
 
-  const { mutate: createOperacion, isPending } = useCreateOperacion()
+  const { mutate: createOperacion, isPending: isOperacionPending } = useCreateOperacion()
+  const { mutate: createIntercambio, isPending: isIntercambioPending } = useCreateIntercambio()
+  const isPending = isOperacionPending || isIntercambioPending
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   if (!isOpen) return null
 
+  const handleClose = () => {
+    setSaveError(null)
+    onClose()
+  }
+
+  const handleBack = () => {
+    setSaveError(null)
+    goBack()
+  }
+
+  const handleSaveIntercambio = () => {
+    setSaveError(null)
+    createIntercambio(
+      {
+        activoEntrada: form.exchangeFrom,
+        montoEntrada: parseFloat(form.exchangeAmount),
+        activoSalida: form.exchangeTo,
+        cotizacion: parseFloat(form.exchangeQuote),
+      },
+      {
+        // El monto devuelto por el backend es el autoritativo
+        onSuccess: (intercambio) => {
+          reset()
+          onSave(`Intercambio registrado: el cliente recibe ${Number(intercambio.montoSalida).toLocaleString('es-AR')} ${intercambio.activoSalida}`)
+          onClose()
+        },
+        onError: (error) => {
+          setSaveError(backendErrorMessage(error, 'No se pudo registrar el intercambio'))
+        },
+      },
+    )
+  }
+
   const handleSave = () => {
+    if (isExchange) {
+      handleSaveIntercambio()
+      return
+    }
+
     const payload: Record<string, unknown> = {
       tipo: form.opType === 'Compra' ? 'COMPRA' : 'VENTA',
       activoId: form.currency,
@@ -97,6 +150,8 @@ export default function AddOperationProgress({ isOpen, onClose, onSave }: AddOpe
         errors={errors}
         showErrors={showErrors}
         isMetal={isMetal}
+        isExchange={isExchange}
+        exchangeOutput={exchangeOutput}
       />
     ),
     2: (
@@ -112,6 +167,8 @@ export default function AddOperationProgress({ isOpen, onClose, onSave }: AddOpe
       <Step3Summary
         form={form}
         isMetal={isMetal}
+        isExchange={isExchange}
+        exchangeOutput={exchangeOutput}
       />
     ),
   }
@@ -120,11 +177,11 @@ export default function AddOperationProgress({ isOpen, onClose, onSave }: AddOpe
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={handleClose} />
       <div className="relative z-50 bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
         <div className="flex justify-end mb-1">
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
             aria-label="Cerrar"
           >
@@ -133,8 +190,13 @@ export default function AddOperationProgress({ isOpen, onClose, onSave }: AddOpe
         </div>
         <StepIndicator currentStep={step} skippedSteps={skippedSteps} />
         {stepComponents[step]}
+        {saveError && (
+          <p role="alert" className="mt-3 text-sm text-red-600 bg-red-50 rounded-md px-3 py-2">
+            {saveError}
+          </p>
+        )}
         <ModalFooter
-          onBack={goBack}
+          onBack={handleBack}
           onNext={step === 3 ? handleSave : goNext}
           isBackDisabled={step === 1}
           isNextDisabled={!isCurrentStepValid || (step === 3 && isPending)}

@@ -11,6 +11,14 @@ const currencySymbol: Record<OperationCurrency, string> = {
   METAL: 'gr',
 }
 
+const currencyLabel: Record<OperationCurrency, string> = {
+  EUR:   'EUR',
+  USD:   'USD',
+  BRL:   'BRL',
+  USDT:  'USDT',
+  METAL: 'Oro',
+}
+
 const currencyColors: Record<OperationCurrency, string> = {
   EUR:   'bg-blue-100 text-blue-700',
   USD:   'bg-green-100 text-green-700',

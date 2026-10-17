@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import * as svc from '../services/intercambios.service'
+import type { RegistrarIntercambioPayload } from '../services/intercambios.service'
+import type { BackendIntercambio } from '../adapters/intercambios.adapter'
 
 const KEY = 'intercambios'
 
@@ -8,24 +10,12 @@ export const useIntercambios = (params?: unknown) =>
 
 export const useCreateIntercambio = () => {
   const qc = useQueryClient()
-  return useMutation({
-    mutationFn: (data: unknown) => svc.create(data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: [KEY] }),
-  })
-}
-
-export const useUpdateIntercambio = () => {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: unknown }) => svc.update(id, data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: [KEY] }),
-  })
-}
-
-export const useDeleteIntercambio = () => {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: (id: string) => svc.remove(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: [KEY] }),
+  return useMutation<BackendIntercambio, unknown, RegistrarIntercambioPayload>({
+    mutationFn: (data) => svc.create(data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [KEY] })
+      qc.invalidateQueries({ queryKey: ['operaciones'] })
+      qc.invalidateQueries({ queryKey: ['dashboard'] })
+    },
   })
 }

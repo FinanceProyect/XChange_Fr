@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Wallet, Globe, PiggyBank, Save, TrendingUp } from "lucide-react";
 import { currencyBalances } from "../data/mockData";
 import {
@@ -56,9 +56,10 @@ export default function Settings() {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Sync state when backend data loads
-  useEffect(() => {
-    if (!backendData) return;
+  // Sync state when backend data loads (ajuste durante el render, sin efecto)
+  const [syncedData, setSyncedData] = useState<typeof backendData>(undefined);
+  if (backendData && backendData !== syncedData) {
+    setSyncedData(backendData);
     setDefaultCurrency(backendData.monedaDefecto);
     setDefaultWallet(backendData.carteraDefecto);
     setLanguage(backendData.idioma);
@@ -70,7 +71,7 @@ export default function Settings() {
       USDT: backendData.saldoUsdt?.toString(),
       PTRANS: backendData.saldoPtrans?.toString(),
     });
-  }, [backendData]);
+  }
 
   const handleBalance = (id: string, value: string) =>
     setBalances((prev) => ({ ...prev, [id]: value }));

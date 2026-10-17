@@ -21,7 +21,7 @@ export default function Operations() {
         (typeof b.amount === "number" ? b.amount : Number(b.amount ?? 0)) === 0,
     );
   const [showModal, setShowModal] = useState(false);
-  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [currency, setCurrency] = useState<OperationCurrency | "">("");
   const [type, setType] = useState<OperationType | "">("");
 
@@ -30,8 +30,8 @@ export default function Operations() {
     setType("");
   };
 
-  const handleSave = () => {
-    setShowToast(true);
+  const handleSave = (message?: string) => {
+    setToastMessage(message ?? "Operación guardada correctamente");
   };
 
   if (isLoading) {
@@ -69,7 +69,7 @@ export default function Operations() {
             Operaciones
           </h1>
           <p className="text-xs lg:text-sm text-gray-500 mt-1">
-            Historial de operaciones de compra y venta de divisas
+            Historial de compras, ventas e intercambios de divisas
           </p>
         </div>
         <button
@@ -101,10 +101,10 @@ export default function Operations() {
         onSave={handleSave}
       />
 
-      {showToast && (
+      {toastMessage && (
         <Toast
-          message="Operación guardada correctamente"
-          onClose={() => setShowToast(false)}
+          message={toastMessage}
+          onClose={() => setToastMessage(null)}
         />
       )}
     </div>

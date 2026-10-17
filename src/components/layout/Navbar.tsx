@@ -1,14 +1,13 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { Settings, LogOut } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
-import { useAuth } from '../../context/auth'
+import { useAuth } from '../../context/useAuth'
 
 const navLinks = [
   { label: 'Dashboard',   to: '/' },
   { label: 'Operaciones', to: '/operations' },
   { label: 'Deudores',    to: '/debtors' },
   { label: 'Acreedores',  to: '/creditors' },
-  { label: 'Intercambios', to: '/exchanges' },
 ]
 
 export default function Navbar() {

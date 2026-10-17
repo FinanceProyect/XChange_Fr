@@ -1,4 +1,4 @@
-export type OperationType = 'Compra' | 'Venta'
+export type OperationType = 'Compra' | 'Venta' | 'Intercambio'
 export type StepId = 1 | 2 | 3
 export const METAL_CURRENCIES = ['METAL'] as const
 export const FIAT_CURRENCIES = ['EUR', 'USD', 'BRL', 'USDT'] as const
@@ -18,6 +18,11 @@ export interface OperationForm {
   creditorName: string
   creditorAmount: string
   creditorDueDate: string
+  // Intercambio: moneda/monto que entrega el cliente, moneda que recibe y cotización (1 no-USD = X USD)
+  exchangeFrom: string
+  exchangeTo: string
+  exchangeAmount: string
+  exchangeQuote: string
 }
 
 export interface StepValidation {

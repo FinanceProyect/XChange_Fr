@@ -1,16 +1,7 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { setTokenGetter, setRefreshCallback } from "../api/client"
 import { refreshRequest, logoutRequest } from "../services/auth.service"
-
-type AuthContextValue = {
-  isAuthenticated: boolean
-  isLoading: boolean
-  token: string | null
-  login: (token: string) => void
-  logout: () => void
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null)
+import { AuthContext } from "./authContext"
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null)
@@ -68,10 +59,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   )
-}
-
-export function useAuth(): AuthContextValue {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error("useAuth must be used inside AuthProvider")
-  return ctx
 }

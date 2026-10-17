@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import type { OperationForm, StepId } from './operation.types'
 import { METAL_CURRENCIES } from './operation.types'
+import { calcularSalidaIntercambio, monedasSalidaPermitidas } from '../../../utils/intercambio'
 
 const initialForm: OperationForm = {
   opType: 'Compra',
@@ -16,6 +17,10 @@ const initialForm: OperationForm = {
   creditorName: '',
   creditorAmount: '',
   creditorDueDate: '',
+  exchangeFrom: '',
+  exchangeTo: '',
+  exchangeAmount: '',
+  exchangeQuote: '',
 }
 
 export default function useOperationForm() {
@@ -24,13 +29,8 @@ export default function useOperationForm() {
   const [showErrors, setShowErrors] = useState(false)
 
   const isMetal = METAL_CURRENCIES.includes(form.currency as typeof METAL_CURRENCIES[number])
-  const needsStep2 = form.hasDebtor || form.hasCreditor
-
-  useEffect(() => {
-    if (!isMetal) {
-      setForm(prev => ({ ...prev, karat: '', weight: '' }))
-    }
-  }, [isMetal])
+  const isExchange = form.opType === 'Intercambio'
+  const needsStep2 = !isExchange && (form.hasDebtor || form.hasCreditor)
 
   const computedAmount = useMemo(() => {
     const qty = parseFloat(form.quantity)
@@ -41,9 +41,20 @@ export default function useOperationForm() {
     return ''
   }, [form.quantity, form.quote])
 
+  const exchangeOutput = calcularSalidaIntercambio(
+    parseFloat(form.exchangeAmount),
+    form.exchangeFrom,
+    form.exchangeTo,
+    parseFloat(form.exchangeQuote),
+  )
+
   const updateField = <K extends keyof OperationForm>(key: K, value: OperationForm[K]) => {
     setForm(prev => {
       const updated = { ...prev, [key]: value }
+      if (key === 'currency' && !METAL_CURRENCIES.includes(value as typeof METAL_CURRENCIES[number])) {
+        updated.karat = ''
+        updated.weight = ''
+      }
       if (key === 'hasDebtor' && value === true) {
         updated.hasCreditor = false
       }
@@ -53,12 +64,34 @@ export default function useOperationForm() {
       if (key === 'opType' && value === 'Venta') {
         updated.hasCreditor = false
       }
+      if (key === 'opType' && value === 'Intercambio') {
+        updated.hasDebtor = false
+        updated.hasCreditor = false
+      }
+      // Mantener "Cliente recibe" dentro del par válido; si hay una sola opción (USD), se elige sola
+      if (key === 'exchangeFrom') {
+        const permitidas = monedasSalidaPermitidas(value as string) as string[]
+        if (!permitidas.includes(updated.exchangeTo)) {
+          updated.exchangeTo = permitidas.length === 1 ? permitidas[0] : ''
+        }
+      }
       return updated
     })
   }
 
   const validateStep = (s: StepId): Partial<Record<keyof OperationForm, string>> => {
     const errors: Partial<Record<keyof OperationForm, string>> = {}
+    if (s === 1 && isExchange) {
+      if (!form.exchangeFrom) errors.exchangeFrom = 'Selecciona la moneda que entrega el cliente'
+      if (!form.exchangeAmount || parseFloat(form.exchangeAmount) <= 0) errors.exchangeAmount = 'Ingresa un monto válido'
+      if (!form.exchangeTo) errors.exchangeTo = 'Selecciona la moneda que recibe el cliente'
+      if (!form.exchangeQuote || parseFloat(form.exchangeQuote) <= 0) {
+        errors.exchangeQuote = 'Ingresa una cotización válida'
+      } else if (exchangeOutput === 0) {
+        errors.exchangeAmount = 'El cliente recibiría menos de una unidad'
+      }
+      return errors
+    }
     if (s === 1) {
       if (!form.currency) errors.currency = 'Selecciona una moneda'
       if (isMetal) {
@@ -144,6 +177,8 @@ export default function useOperationForm() {
     goBack,
     needsStep2,
     isMetal,
+    isExchange,
+    exchangeOutput,
     computedAmount,
     isCurrentStepValid,
     errors,

@@ -4,6 +4,7 @@ import CurrencySelect from './CurrencySelect'
 import MetalFields from './MetalFields'
 import SectionDivider from './SectionDivider'
 import PartyToggleGroup from './PartyToggleGroup'
+import ExchangeFields from './ExchangeFields'
 
 interface Step1OperationProps {
   form: OperationForm
@@ -11,6 +12,8 @@ interface Step1OperationProps {
   errors: Partial<Record<keyof OperationForm, string>>
   showErrors: boolean
   isMetal: boolean
+  isExchange: boolean
+  exchangeOutput: number | null
 }
 
 const inputClass = (invalid: boolean) =>
@@ -26,7 +29,27 @@ export default function Step1Operation({
   errors,
   showErrors,
   isMetal,
+  isExchange,
+  exchangeOutput,
 }: Step1OperationProps) {
+  if (isExchange) {
+    return (
+      <div className="flex flex-col gap-3 overflow-y-auto max-h-[360px] pr-1">
+        <OperationTypeToggle
+          value={form.opType}
+          onChange={v => updateField('opType', v)}
+        />
+        <ExchangeFields
+          form={form}
+          updateField={updateField}
+          errors={errors}
+          showErrors={showErrors}
+          exchangeOutput={exchangeOutput}
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-3 overflow-y-auto max-h-[360px] pr-1">
       <OperationTypeToggle

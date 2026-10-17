@@ -1,18 +1,22 @@
 import type { Operation, OperationCurrency, OperationType } from '../data/mockData'
 
-// Shape devuelta por el backend en /operaciones/compra y /operaciones/venta
+// Shape devuelta por el backend en /operaciones. Para INTERCAMBIO: activoId/monto son lo que
+// entrega el cliente, activoSalida/montoSalida lo que recibe y tasaCambio la cotización cargada.
 export interface BackendOperacion {
   id: string
   fechaHora: string
-  tipo: 'COMPRA' | 'VENTA'
+  tipo: 'COMPRA' | 'VENTA' | 'INTERCAMBIO'
   activoId: string
   monto: number
   tasaCambio: number
+  activoSalida?: string | null
+  montoSalida?: number | null
 }
 
 const tipoMap: Record<BackendOperacion['tipo'], OperationType> = {
-  COMPRA: 'Compra',
-  VENTA:  'Venta',
+  COMPRA:      'Compra',
+  VENTA:       'Venta',
+  INTERCAMBIO: 'Intercambio',
 }
 
 // activoId es el mismo código de moneda que usa el frontend
@@ -27,7 +31,7 @@ const activoIdToCurrency: Record<string, OperationCurrency> = {
 export function operacionToFrontend(op: BackendOperacion): Operation {
   const isoDate = op.fechaHora
   const [datePart] = op.fechaHora.split('T')
-  return {
+  const operation: Operation = {
     id:        op.id,
     date:      datePart,
     dateTime:  isoDate,
@@ -37,4 +41,9 @@ export function operacionToFrontend(op: BackendOperacion): Operation {
     buyPrice:  op.tasaCambio,
     sellPrice: op.tasaCambio,
   }
+  if (op.tipo === 'INTERCAMBIO' && op.activoSalida) {
+    operation.salidaCurrency = activoIdToCurrency[op.activoSalida] ?? 'USD'
+    operation.salidaAmount   = Number(op.montoSalida ?? 0)
+  }
+  return operation
 }

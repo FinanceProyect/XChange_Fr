@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import type { Operation, OperationCurrency, OperationType } from '../../data/mockData'
 import { useOperaciones } from '../../queries/operaciones.query'
 import { operacionToFrontend, type BackendOperacion } from '../../adapters/operaciones.adapter'
 import Pagination from '../ui/Pagination'
 import { formatDateValue, formatTimeValue } from '../../utils/date'
+import { formatCotizacionIntercambio, formatMovimientoIntercambio } from '../../utils/intercambio'
 import EditOperationModal from './EditOperationModal'
 import DeleteOperationModal from './DeleteOperationModal'
 
@@ -32,8 +33,15 @@ const currencyColors: Record<OperationCurrency, string> = {
 }
 
 const typeColors: Record<OperationType, string> = {
-  Compra: 'bg-green-100 text-green-700',
-  Venta:  'bg-red-100 text-red-600',
+  Compra:      'bg-green-100 text-green-700',
+  Venta:       'bg-red-100 text-red-600',
+  Intercambio: 'bg-blue-100 text-blue-700',
+}
+
+const tipoParam: Record<OperationType, string> = {
+  Compra:      'COMPRA',
+  Venta:       'VENTA',
+  Intercambio: 'INTERCAMBIO',
 }
 
 const PAGE_SIZE    = 8
@@ -50,14 +58,22 @@ export default function OperationsTable({ currency, type }: OperationsTableProps
   const [selectedOp, setSelectedOp]   = useState<Operation | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Operation | null>(null)
   const [swipeOffsets, setSwipeOffsets] = useState<Record<string, number>>({})
+  // Fila en arrastre: en estado (no en el ref) porque se lee durante el render
+  const [activeSwipeId, setActiveSwipeId] = useState<string | null>(null)
   const swipeStart   = useRef<{ id: string; x: number } | null>(null)
   const didSwipe     = useRef(false)
 
-  useEffect(() => { setPage(1) }, [currency, type])
+  // Volver a la página 1 al cambiar los filtros (ajuste durante el render, sin efecto)
+  const filterKey = `${currency}|${type}`
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey)
+  if (filterKey !== prevFilterKey) {
+    setPrevFilterKey(filterKey)
+    setPage(1)
+  }
 
   const params: Record<string, unknown> = { page: page - 1, size: PAGE_SIZE }
   if (currency) params.currency = currency
-  if (type)     params.tipo     = type === 'Compra' ? 'COMPRA' : 'VENTA'
+  if (type)     params.tipo     = tipoParam[type]
 
   const { data, isLoading } = useOperaciones(params)
 
@@ -70,6 +86,7 @@ export default function OperationsTable({ currency, type }: OperationsTableProps
   const handleTouchStart = (e: React.TouchEvent, id: string) => {
     swipeStart.current = { id, x: e.touches[0].clientX }
     didSwipe.current   = false
+    setActiveSwipeId(id)
   }
 
   const handleTouchMove = (e: React.TouchEvent, id: string) => {
@@ -84,6 +101,7 @@ export default function OperationsTable({ currency, type }: OperationsTableProps
   const handleTouchEnd = (op: Operation) => {
     if (!swipeStart.current || swipeStart.current.id !== op.id) return
     swipeStart.current = null
+    setActiveSwipeId(null)
     const offset = swipeOffsets[op.id] ?? 0
     if (offset >= SWIPE_THRESHOLD) {
       setSwipeOffsets(prev => ({ ...prev, [op.id]: MAX_SWIPE }))
@@ -140,11 +158,45 @@ export default function OperationsTable({ currency, type }: OperationsTableProps
               </thead>
               <tbody>
                 {rows.map((op) => {
+                  // Intercambios: solo lectura, sin editar/eliminar (ni click ni swipe)
+                  if (op.type === 'Intercambio' && op.salidaCurrency) {
+                    return (
+                      <tr key={op.id} className="h-14 align-middle border-b border-gray-50">
+                        <td className="py-3 px-3 text-gray-600">
+                          {formatDateValue(op.dateTime ?? op.date)}
+                        </td>
+                        <td className="py-3 px-3 text-gray-600">
+                          {formatTimeValue(op.dateTime ?? op.date)}
+                        </td>
+                        <td className="py-3 px-3 whitespace-nowrap">
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${currencyColors[op.currency]}`}>
+                            {currencyLabel[op.currency]}
+                          </span>
+                          <span className="text-gray-400 text-xs mx-1">→</span>
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${currencyColors[op.salidaCurrency]}`}>
+                            {currencyLabel[op.salidaCurrency]}
+                          </span>
+                        </td>
+                        <td className="py-3 px-3">
+                          <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${typeColors[op.type]}`}>
+                            {op.type}
+                          </span>
+                        </td>
+                        <td className="py-3 px-3 text-right text-gray-700 font-medium whitespace-nowrap">
+                          {formatMovimientoIntercambio(op.amount, op.currency, op.salidaAmount ?? 0, op.salidaCurrency)}
+                        </td>
+                        <td className="py-3 px-3 text-right text-gray-700 whitespace-nowrap">
+                          {formatCotizacionIntercambio(op.currency, op.salidaCurrency, op.buyPrice)}
+                        </td>
+                      </tr>
+                    )
+                  }
+
                   const sym     = currencySymbol[op.currency]
                   const isMetal = op.currency === 'METAL'
                   const offset  = swipeOffsets[op.id] ?? 0
                   const ratio   = Math.min(offset / SWIPE_THRESHOLD, 1)
-                  const isActive = swipeStart.current?.id === op.id
+                  const isActive = activeSwipeId === op.id
 
                   return (
                     <tr
