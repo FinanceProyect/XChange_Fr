@@ -6,7 +6,7 @@ export const getAll = async (params?: unknown) => {
 }
 
 export const getById = async (id: string) => {
-  const response = await apiClient.get(`/operaciones/${id}`)
+  const response = await apiClient.get(`operaciones/${id}`)
   return response.data
 }
 
@@ -15,26 +15,26 @@ export const create = async (data: unknown) => {
   const { tipo, ...body } = data as { tipo?: string; [key: string]: unknown }
   const endpoint =
     tipo === 'COMPRA' || tipo === 'Compra'
-      ? '/operaciones/compra'
-      : '/operaciones/venta'
+      ? 'operaciones/compra'
+      : 'operaciones/venta'
   const response = await apiClient.post(endpoint, body)
   return response.data
 }
 
 export const update = async (id: string, data: unknown) => {
-  const response = await apiClient.put(`/operaciones/${id}`, data)
+  const response = await apiClient.put(`operaciones/${id}`, data)
   return response.data
 }
 
 export const remove = async (id: string) => {
-  const response = await apiClient.delete(`/operaciones/${id}`)
+  const response = await apiClient.delete(`operaciones/${id}`)
   return response.data
 }
 
 // Genera la deuda vinculada a una operación — POST /operaciones/{id}/deuda?deudorId=
 export const generarDeuda = async (operacionId: string, deudorId: string) => {
   const response = await apiClient.post(
-    `/operaciones/${operacionId}/deuda`,
+    `operaciones/${operacionId}/deuda`,
     null,
     { params: { deudorId } },
   )

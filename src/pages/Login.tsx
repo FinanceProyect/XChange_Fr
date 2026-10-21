@@ -8,7 +8,7 @@ import { showToast } from '../lib/toastBus'
 export default function Login() {
   const navigate = useNavigate()
   const { login } = useAuth()
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
@@ -18,11 +18,11 @@ export default function Login() {
     e.preventDefault()
     setIsLoading(true)
     try {
-      const token = await loginRequest({ email, password, rememberMe })
-      login(token)
+      const sesion = await loginRequest({ username, password })
+      login(sesion)
       navigate('/')
     } catch {
-      showToast({ message: 'Credenciales incorrectas. Verificá tu email y contraseña.', variant: 'error' })
+      showToast({ message: 'Credenciales incorrectas. Verificá tu usuario y contraseña.', variant: 'error' })
     } finally {
       setIsLoading(false)
     }
@@ -40,19 +40,19 @@ export default function Login() {
         {/* Logo */}
         <div className="relative flex items-center gap-3">
           <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-            <span className="text-white text-sm font-bold">CJ</span>
+            <span className="text-white text-sm font-bold">xC</span>
           </div>
-          <span className="text-white font-semibold text-base tracking-wide">CambioJoyas Lourdes</span>
+          <span className="text-white font-semibold text-base tracking-wide">xChange ERP</span>
         </div>
 
         {/* Center content */}
         <div className="relative space-y-8">
           <div>
             <h2 className="text-3xl font-bold text-white leading-snug">
-              Gestión de cambio<br />y joyas en un solo lugar
+              Control total.<br />Sin complicaciones.
             </h2>
             <p className="text-blue-100 text-sm mt-3 max-w-xs leading-relaxed">
-              Control de operaciones, deudores, acreedores e intercambios de divisas de forma simple y eficiente.
+              Gestiona operaciones de cambio y joyería desde un solo lugar, con visibilidad completa sobre deudores y divisas.
             </p>
           </div>
 
@@ -61,7 +61,7 @@ export default function Login() {
             {[
               { icon: ArrowRightLeft, label: 'Intercambio de divisas en tiempo real' },
               { icon: TrendingUp,     label: 'Dashboard con resumen financiero'     },
-              { icon: Gem,            label: 'Registro de operaciones con joyas'    },
+              { icon: Gem,            label: 'Soporte para múltiples divisas'       },
             ].map(({ icon: Icon, label }) => (
               <div key={label} className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-white/15 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -75,7 +75,7 @@ export default function Login() {
 
         {/* Bottom */}
         <p className="relative text-blue-200 text-xs">
-          CambioJoyas Lourdes © {new Date().getFullYear()}
+          xChange ERP © {new Date().getFullYear()}
         </p>
       </div>
 
@@ -85,9 +85,9 @@ export default function Login() {
           {/* Mobile logo */}
           <div className="flex items-center justify-center gap-2 mb-8 lg:hidden">
             <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-md shadow-blue-200">
-              <span className="text-white text-sm font-bold">CJ</span>
+              <span className="text-white text-sm font-bold">xC</span>
             </div>
-            <span className="font-semibold text-gray-800">CambioJoyas Lourdes</span>
+            <span className="font-semibold text-gray-800">xChange ERP</span>
           </div>
 
           {/* Heading */}
@@ -99,23 +99,23 @@ export default function Login() {
           {/* Card */}
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-7">
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Email */}
+              {/* Usuario */}
               <div>
                 <label className="text-xs font-medium text-gray-600 mb-1.5 block">
-                  Correo electrónico
+                  Usuario
                 </label>
                 <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all">
                   <span className="px-3 py-2.5 bg-gray-50 border-r border-gray-200 text-gray-400">
                     <Mail size={15} />
                   </span>
                   <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="usuario@ejemplo.com"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="usuario"
                     className="flex-1 px-3 py-2.5 text-sm text-gray-700 focus:outline-none placeholder:text-gray-400 bg-white"
                     required
-                    autoComplete="email"
+                    autoComplete="username"
                   />
                 </div>
               </div>

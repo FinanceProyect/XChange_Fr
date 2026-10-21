@@ -21,7 +21,7 @@ export default function CurrencySelect({ value, onChange, error, showError }: Cu
         <option value="USD">$ Dólar (USD)</option>
         <option value="BRL">R$ Real Brasileño (BRL)</option>
         <option value="USDT">₮ Tether (USDT)</option>
-        <option value="METAL">Metal</option>
+        <option value="METAL">Oro</option>
       </select>
       {showError && error && <p className="text-xs text-red-500 mt-0.5">{error}</p>}
     </div>

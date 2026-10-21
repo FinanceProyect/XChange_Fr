@@ -37,11 +37,13 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
 
-    // Handle 401: attempt token refresh once (skip if already retried or is a refresh call)
+    // Handle 401: attempt token refresh once (skip if already retried or is an auth call:
+    // un 401 en login es credencial incorrecta, no sesión vencida)
+    const esAuth = originalRequest.url?.includes("auth/login") || originalRequest.url?.includes("auth/refresh")
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes("refresh")
+      !esAuth
     ) {
       originalRequest._retry = true
 
@@ -76,8 +78,10 @@ apiClient.interceptors.response.use(
       }
     }
 
-    // Show toast for all non-401 errors (401 is handled silently above)
-    if (error.response?.status !== 401) {
+    // Show toast for all non-401 errors (401 is handled silently above).
+    // El cambio de contraseña muestra su propio error inline en el modal.
+    const errorInline = originalRequest.url?.includes("usuarios/me/password")
+    if (error.response?.status !== 401 && !errorInline) {
       const message =
         error.response?.data?.message ??
         error.message ??

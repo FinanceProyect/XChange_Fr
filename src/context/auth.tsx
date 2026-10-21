@@ -1,27 +1,27 @@
 import { useEffect, useRef, useState } from "react"
 import { setTokenGetter, setRefreshCallback } from "../api/client"
-import { refreshRequest, logoutRequest } from "../services/auth.service"
+import { refreshRequest, logoutRequest, type Sesion } from "../services/auth.service"
 import { AuthContext } from "./authContext"
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setToken] = useState<string | null>(null)
+  const [session, setSession] = useState<Sesion | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const tokenRef = useRef<string | null>(null)
   const initialized = useRef(false)
 
   // Keep tokenRef in sync for the interceptor getter (avoids stale closures)
   useEffect(() => {
-    tokenRef.current = token
-  }, [token])
+    tokenRef.current = session?.accessToken ?? null
+  }, [session])
 
   // Register getter and refresh callback with the axios client
   useEffect(() => {
     setTokenGetter(() => tokenRef.current)
     setRefreshCallback(async () => {
-      const newToken = await refreshRequest()
-      setToken(newToken)
-      tokenRef.current = newToken
-      return newToken
+      const nueva = await refreshRequest()
+      setSession(nueva)
+      tokenRef.current = nueva.accessToken
+      return nueva.accessToken
     })
   }, [])
 
@@ -32,14 +32,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initialized.current = true
 
     refreshRequest()
-      .then((t) => setToken(t))
-      .catch(() => setToken(null))
+      .then((s) => setSession(s))
+      .catch(() => setSession(null))
       .finally(() => setIsLoading(false))
   }, [])
 
-  function login(newToken: string) {
-    setToken(newToken)
-    tokenRef.current = newToken
+  function login(nueva: Sesion) {
+    setSession(nueva)
+    tokenRef.current = nueva.accessToken
   }
 
   async function logout() {
@@ -48,13 +48,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Proceed with local logout even if backend call fails
     }
-    setToken(null)
+    setSession(null)
     tokenRef.current = null
   }
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated: token !== null, isLoading, token, login, logout }}
+      value={{
+        isAuthenticated: session !== null,
+        isLoading,
+        token: session?.accessToken ?? null,
+        username: session?.username ?? null,
+        role: session?.role ?? null,
+        login,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>

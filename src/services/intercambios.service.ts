@@ -9,12 +9,12 @@ export interface RegistrarIntercambioPayload {
 }
 
 export const getAll = async (params?: unknown) => {
-  const response = await apiClient.get('/intercambios', { params })
+  const response = await apiClient.get('intercambios', { params })
   const data = response.data
   return Array.isArray(data) ? data : (data?.content ?? [])
 }
 
 export const create = async (data: RegistrarIntercambioPayload) => {
-  const response = await apiClient.post('/intercambios', data)
+  const response = await apiClient.post('intercambios', data)
   return response.data
 }

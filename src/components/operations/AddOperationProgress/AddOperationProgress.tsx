@@ -113,7 +113,7 @@ export default function AddOperationProgress({ isOpen, onClose, onSave }: AddOpe
     }
 
     if (isMetal) {
-      payload.quilataje = form.karat
+      payload.quilataje = parseFloat(form.karat)
       payload.peso = parseFloat(form.weight)
     } else {
       payload.monto = parseFloat(form.quantity)
