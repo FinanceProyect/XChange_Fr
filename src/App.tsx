@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import Operations from "./pages/Operations";
 import Debtors from "./pages/Debtors";
 import Creditors from "./pages/Creditors";
+import Expenses from "./pages/Expenses";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import GlobalToastHost from "./components/ui/GlobalToastHost";
@@ -25,6 +26,7 @@ function App() {
                   <Route path="/operations" element={<Operations />} />
                   <Route path="/debtors" element={<Debtors />} />
                   <Route path="/creditors" element={<Creditors />} />
+                  <Route path="/expenses" element={<Expenses />} />
                   <Route path="/settings" element={<Settings />} />
                 </Routes>
               </main>
