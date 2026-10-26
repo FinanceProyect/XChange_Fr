@@ -1,15 +1,20 @@
 import { NavLink } from 'react-router-dom'
 import { Settings } from 'lucide-react'
 import UserMenu from './UserMenu'
+import { useAuth } from '../../context/useAuth'
 
 const navLinks = [
-  { label: 'Dashboard',   to: '/' },
-  { label: 'Operaciones', to: '/operations' },
-  { label: 'Deudores',    to: '/debtors' },
-  { label: 'Acreedores',  to: '/creditors' },
+  { label: 'Dashboard',   to: '/',            adminOnly: false },
+  { label: 'Operaciones', to: '/operations',  adminOnly: false },
+  { label: 'Deudores',    to: '/debtors',     adminOnly: false },
+  { label: 'Acreedores',  to: '/creditors',   adminOnly: false },
+  { label: 'Gastos',      to: '/expenses',    adminOnly: true },
 ]
 
 export default function Navbar() {
+  const { role } = useAuth()
+  const linksVisibles = navLinks.filter((link) => !link.adminOnly || role === 'ADMIN')
+
   return (
     <nav className="bg-white border-b border-gray-200 px-4 lg:px-8 py-2.5 flex items-center justify-between max-w-[1320px] mx-auto">
       {/* Logo */}
@@ -22,7 +27,7 @@ export default function Navbar() {
 
       {/* Nav links */}
       <ul className="flex items-center gap-1">
-        {navLinks.map((link) => (
+        {linksVisibles.map((link) => (
           <li key={link.to}>
             <NavLink
               to={link.to}
