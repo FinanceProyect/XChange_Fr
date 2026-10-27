@@ -1,9 +1,18 @@
 import { useState } from "react";
 import { X } from "lucide-react";
+import { isAxiosError } from "axios";
 import { useCreateDeudor } from "../../queries/deudores.query";
 import DatePicker from "../operations/AddOperationProgress/DatePicker";
 
-const CURRENCIES = ["USD", "EUR", "BRL", "USDT", "METAL"];
+const CURRENCIES = ["ARS", "PTRANS", "USD", "EUR", "BRL", "USDT", "METAL"];
+
+const backendErrorMessage = (error: unknown, fallback: string) => {
+  if (isAxiosError(error)) {
+    const data = error.response?.data as { error?: string; message?: string } | undefined
+    return data?.error ?? data?.message ?? fallback
+  }
+  return fallback
+}
 
 interface FormState {
   nombre: string;
@@ -40,6 +49,7 @@ export default function AddDebtorModal({
   onSave,
 }: AddDebtorModalProps) {
   const [form, setForm] = useState<FormState>(EMPTY);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const { mutate: createDeudor, isPending } = useCreateDeudor();
 
   const isValid =
@@ -49,8 +59,10 @@ export default function AddDebtorModal({
     parseFloat(form.importe) > 0 &&
     form.fechaVencimiento !== "";
 
-  const set = (field: keyof FormState, value: string) =>
+  const set = (field: keyof FormState, value: string) => {
+    setSaveError(null);
     setForm((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSave = () => {
     if (!isValid) return;
@@ -70,6 +82,9 @@ export default function AddDebtorModal({
         onSuccess: () => {
           onSave();
           onClose();
+        },
+        onError: (error) => {
+          setSaveError(backendErrorMessage(error, "No se pudo registrar la deuda"));
         },
       },
     );
@@ -151,6 +166,10 @@ export default function AddDebtorModal({
             />
           </div>
         </div>
+
+        {saveError && (
+          <p className="mt-4 text-sm text-red-600">{saveError}</p>
+        )}
 
         {/* Footer */}
         <div className="flex items-center gap-3 mt-6">

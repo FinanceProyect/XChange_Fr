@@ -25,6 +25,8 @@ const parseAmount = (value: string | number | null | undefined) => {
 };
 
 const CURRENCY_COLORS: Record<string, string> = {
+  ARS:     'bg-sky-100 text-sky-700',
+  PTRANS:  'bg-violet-100 text-violet-700',
   EUR:   'bg-blue-100 text-blue-700',
   USD:   'bg-green-100 text-green-700',
   BRL:   'bg-yellow-100 text-yellow-700',
