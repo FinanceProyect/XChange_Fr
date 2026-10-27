@@ -36,7 +36,7 @@ export default function Settings() {
         saldoUsd: number;
         saldoBrl: number;
         saldoUsdt: number;
-        saldoPtrans: number;
+        saldoPesosTrans: number;
         carteraDefecto: string;
         monedaDefecto: string;
         idioma: string;
@@ -69,7 +69,7 @@ export default function Settings() {
       USD: backendData.saldoUsd?.toString(),
       BRL: backendData.saldoBrl?.toString(),
       USDT: backendData.saldoUsdt?.toString(),
-      PTRANS: backendData.saldoPtrans?.toString(),
+      PTRANS: backendData.saldoPesosTrans?.toString(),
     });
   }
 
@@ -82,7 +82,7 @@ export default function Settings() {
     saldoUsd: parseFloat(balances.USD || "0"),
     saldoBrl: parseFloat(balances.BRL || "0"),
     saldoUsdt: parseFloat(balances.USDT || "0"),
-    saldoPtrans: parseFloat(balances.PTRANS || "0"),
+    saldoPesosTrans: parseFloat(balances.PTRANS || "0"),
     carteraDefecto: defaultWallet,
     monedaDefecto: defaultCurrency,
     idioma: language,
