@@ -1,4 +1,7 @@
-import { formatAmount } from "../../utils/formatAmount";
+const amountFormatter = new Intl.NumberFormat("es-ES", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
 interface CurrencyCardProps {
   currency: string;
@@ -55,9 +58,10 @@ export default function CurrencyCard({ currency, symbol, amount }: CurrencyCardP
       </div>
       <p
         className="text-[15px] font-medium text-black"
-        style={{ whiteSpace: "nowrap", lineHeight: 1.2 }}
+        style={{ overflowWrap: "anywhere", lineHeight: 1.2 }}
       >
-        {formatAmount(safeAmount, symbol)}
+        {symbol}
+        {amountFormatter.format(safeAmount)}
       </p>
       <p className="mt-1 text-[11px] text-neutral-400">
         Saldo disponible
