@@ -1,7 +1,9 @@
-import { useState } from "react";
-import { Search } from "lucide-react";
+import { Fragment, useState } from "react";
+import { ChevronDown, ChevronRight, Plus, Search } from "lucide-react";
 import Pagination from "../ui/Pagination";
 import EditDebtorModal from "./EditDebtorModal";
+import AgrandarDeudaModal from "./AgrandarDeudaModal";
+import HistorialDeuda from "./HistorialDeuda";
 import { useDeudores, usePagarDeudor } from "../../queries/deudores.query";
 import {
   deudorToFrontend,
@@ -41,6 +43,8 @@ export default function DebtorsTable() {
   const [search, setSearch] = useState("");
   const [editingDebtor, setEditingDebtor] = useState<Debtor | null>(null);
   const [payingId, setPayingId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [agrandarDebtor, setAgrandarDebtor] = useState<Debtor | null>(null);
 
   const { data, isLoading } = useDeudores();
   const { mutate: pagarDeudor, isPending: isPaying } = usePagarDeudor();
@@ -137,7 +141,7 @@ export default function DebtorsTable() {
                 <col className="w-[90px]" />
                 <col className="w-[130px]" />
                 <col className="w-[130px]" />
-                <col className="w-[70px]" />
+                <col className="w-[130px]" />
               </colgroup>
               <thead>
                 <tr className="text-xs text-gray-400 uppercase border-b border-gray-100">
@@ -152,8 +156,8 @@ export default function DebtorsTable() {
               </thead>
               <tbody>
                 {paginated.map((debtor) => (
+                  <Fragment key={debtor.id}>
                   <tr
-                    key={debtor.id}
                     onClick={() => {
                       if (debtor.status === "Paid") return;
                       setEditingDebtor(debtor);
@@ -202,13 +206,55 @@ export default function DebtorsTable() {
                       </span>
                     </td>
                     <td className="py-3 text-right">
-                      <MarkAsPaidButton
-                        disabled={debtor.status === "Paid"}
-                        loading={isPaying && payingId === debtor.id}
-                        onConfirm={() => handleMarkAsPaid(debtor)}
-                      />
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          title="Ver historial"
+                          aria-label="Ver historial"
+                          aria-expanded={expandedId === debtor.id}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExpandedId(expandedId === debtor.id ? null : debtor.id);
+                          }}
+                          className="text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
+                        >
+                          {expandedId === debtor.id ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        </button>
+                        {debtor.status !== "Paid" && (
+                          <button
+                            type="button"
+                            title="Agrandar deuda"
+                            aria-label="Agrandar deuda"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setAgrandarDebtor(debtor);
+                            }}
+                            className="text-blue-500 hover:text-blue-600 cursor-pointer transition-colors"
+                          >
+                            <Plus size={16} />
+                          </button>
+                        )}
+                        <MarkAsPaidButton
+                          disabled={debtor.status === "Paid"}
+                          loading={isPaying && payingId === debtor.id}
+                          onConfirm={() => handleMarkAsPaid(debtor)}
+                        />
+                      </div>
                     </td>
                   </tr>
+                  {expandedId === debtor.id && (
+                    <tr className="border-b border-gray-50">
+                      <td colSpan={7} className="px-2 py-3">
+                        <HistorialDeuda
+                          deudorId={debtor.deudorId ?? debtor.id}
+                          deudaId={debtor.id}
+                          moneda={debtor.moneda ?? ""}
+                          onPagarParcial={debtor.status === "Paid" ? undefined : () => setEditingDebtor(debtor)}
+                        />
+                      </td>
+                    </tr>
+                  )}
+                  </Fragment>
                 ))}
                 {paginated.length === 0 ? (
                   <tr aria-hidden>
@@ -254,6 +300,13 @@ export default function DebtorsTable() {
           debtor={editingDebtor}
           onClose={() => setEditingDebtor(null)}
           onSave={() => setEditingDebtor(null)}
+        />
+      )}
+
+      {agrandarDebtor && (
+        <AgrandarDeudaModal
+          debtor={agrandarDebtor}
+          onClose={() => setAgrandarDebtor(null)}
         />
       )}
     </>

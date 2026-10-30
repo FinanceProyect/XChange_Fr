@@ -28,6 +28,20 @@ export const pagar = async (data: {
   return response.data
 }
 
+export const agrandar = async (
+  deudorId: string,
+  moneda: string,
+  data: { monto: number; motivo?: string },
+) => {
+  const response = await apiClient.post(`deudores/${deudorId}/deudas/${moneda}/agrandar`, data)
+  return response.data
+}
+
+export const getMovimientos = async (deudorId: string, deudaId: string) => {
+  const response = await apiClient.get(`deudores/${deudorId}/deudas/${deudaId}/movimientos`)
+  return response.data
+}
+
 export const remove = async (id: string) => {
   const response = await apiClient.delete(`deudores/${id}`)
   return response.data

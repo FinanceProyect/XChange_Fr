@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
+  agrandar,
   create,
   getAll,
   getById,
+  getMovimientos,
   pagar,
   remove,
   update,
@@ -53,7 +55,38 @@ export const usePagarDeudor = () => {
     mutationFn: (data: { id: string; pagos: { moneda: string; monto: number }[] }) => pagar(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["deudores"] })
+      queryClient.invalidateQueries({ queryKey: ["movimientosDeuda"] })
     },
+  })
+}
+
+export const useAgrandarDeuda = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      deudorId,
+      moneda,
+      monto,
+      motivo,
+    }: {
+      deudorId: string
+      moneda: string
+      monto: number
+      motivo?: string
+    }) => agrandar(deudorId, moneda, { monto, motivo }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["deudores"] })
+      queryClient.invalidateQueries({ queryKey: ["movimientosDeuda"] })
+    },
+  })
+}
+
+export const useMovimientosDeuda = (deudorId: string, deudaId: string, enabled: boolean) => {
+  return useQuery({
+    queryKey: ["movimientosDeuda", deudorId, deudaId],
+    queryFn: () => getMovimientos(deudorId, deudaId),
+    enabled: enabled && !!deudorId && !!deudaId,
   })
 }
 
