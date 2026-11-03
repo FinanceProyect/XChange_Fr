@@ -45,11 +45,11 @@ export default function MarkAsPaidButton({
   };
 
   return (
-    <div className="relative inline-block" ref={containerRef}>
+    <div className="relative flex" ref={containerRef}>
       <button
         onClick={handleToggle}
         disabled={disabled || loading}
-        className={`transition-colors ${
+        className={`flex transition-colors ${
           disabled || loading
             ? "text-gray-300 cursor-not-allowed"
             : "text-green-500 hover:text-green-600 cursor-pointer"

@@ -207,38 +207,49 @@ export default function DebtorsTable() {
                     </td>
                     <td className="py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button
-                          type="button"
-                          title="Ver historial"
-                          aria-label="Ver historial"
-                          aria-expanded={expandedId === debtor.id}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setExpandedId(expandedId === debtor.id ? null : debtor.id);
-                          }}
-                          className="text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
-                        >
-                          {expandedId === debtor.id ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                        </button>
-                        {debtor.status !== "Paid" && (
+                        <span className="w-4 h-4 flex items-center justify-center shrink-0">
+                          <button
+                            type="button"
+                            title="Ver historial"
+                            aria-label="Ver historial"
+                            aria-expanded={expandedId === debtor.id}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedId(expandedId === debtor.id ? null : debtor.id);
+                            }}
+                            className="flex text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
+                          >
+                            {expandedId === debtor.id ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                          </button>
+                        </span>
+                        <span className="w-4 h-4 flex items-center justify-center shrink-0">
                           <button
                             type="button"
                             title="Agrandar deuda"
                             aria-label="Agrandar deuda"
+                            aria-hidden={debtor.status === "Paid" || undefined}
+                            tabIndex={debtor.status === "Paid" ? -1 : undefined}
+                            disabled={debtor.status === "Paid"}
                             onClick={(e) => {
                               e.stopPropagation();
                               setAgrandarDebtor(debtor);
                             }}
-                            className="text-blue-500 hover:text-blue-600 cursor-pointer transition-colors"
+                            className={`flex transition-colors ${
+                              debtor.status === "Paid"
+                                ? "invisible"
+                                : "text-blue-500 hover:text-blue-600 cursor-pointer"
+                            }`}
                           >
                             <Plus size={16} />
                           </button>
-                        )}
-                        <MarkAsPaidButton
-                          disabled={debtor.status === "Paid"}
-                          loading={isPaying && payingId === debtor.id}
-                          onConfirm={() => handleMarkAsPaid(debtor)}
-                        />
+                        </span>
+                        <span className="w-4 h-4 flex items-center justify-center shrink-0">
+                          <MarkAsPaidButton
+                            disabled={debtor.status === "Paid"}
+                            loading={isPaying && payingId === debtor.id}
+                            onConfirm={() => handleMarkAsPaid(debtor)}
+                          />
+                        </span>
                       </div>
                     </td>
                   </tr>
