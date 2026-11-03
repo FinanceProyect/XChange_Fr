@@ -3,8 +3,8 @@ import FormField from './FormField'
 import { useCotizacionBlue } from '../../../queries/cotizaciones.query'
 import {
   MONEDAS_INTERCAMBIO,
+  USD,
   formatCotizacionIntercambio,
-  monedaCotizada,
   monedasSalidaPermitidas,
 } from '../../../utils/intercambio'
 
@@ -43,7 +43,7 @@ export default function ExchangeFields({
   const salidas = monedasSalidaPermitidas(form.exchangeFrom)
   const quote = parseFloat(form.exchangeQuote)
   const parCompleto = !!form.exchangeFrom && !!form.exchangeTo
-  const cotizada = parCompleto ? monedaCotizada(form.exchangeFrom, form.exchangeTo) : 'moneda'
+  const noUsd = parCompleto ? (form.exchangeFrom === USD ? form.exchangeTo : form.exchangeFrom) : 'moneda'
 
   return (
     <>
@@ -85,7 +85,7 @@ export default function ExchangeFields({
         </select>
       </FormField>
 
-      <FormField label={`Cotización (USD por 1 ${cotizada})`} error={errors.exchangeQuote} showError={showErrors}>
+      <FormField label={`Cotización (${noUsd} por 1 USD)`} error={errors.exchangeQuote} showError={showErrors}>
         <input
           type="number"
           min="0"

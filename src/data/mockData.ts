@@ -197,6 +197,8 @@ export interface Operation {
   sellPrice: number
   quilataje?: string
   peso?: number
+  // Compras/ventas de divisas: medio de pago en pesos (ARS = caja, PTRANS = pesos transferencia)
+  medioPago?: 'ARS' | 'PTRANS'
   // Solo en intercambios: lo que recibe el cliente
   salidaCurrency?: OperationCurrency
   salidaAmount?: number

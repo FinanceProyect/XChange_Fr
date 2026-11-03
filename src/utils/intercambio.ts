@@ -11,14 +11,10 @@ export function monedasSalidaPermitidas(entrada: string): MonedaIntercambio[] {
   return entrada === USD ? [...CONTRAPARTES_USD] : [USD]
 }
 
-/** La moneda no-USD del par, en la que se expresa la cotización. */
-export function monedaCotizada(from: string, to: string): string {
-  return from === USD ? to : from
-}
-
 /**
- * Monto que recibe el cliente: multiplica si entrega la moneda no-USD, divide si entrega USD.
- * Redondea a 8 decimales antes del floor para evitar errores de punto flotante (100 × 1.14 = 113.999…).
+ * Monto que recibe el cliente. La cotización son unidades de la moneda no-USD por 1 USD:
+ * multiplica si el cliente entrega USD, divide si entrega la moneda no-USD.
+ * Redondea a 8 decimales antes del floor para evitar errores de punto flotante.
  * Devuelve null si los datos no permiten calcular.
  */
 export function calcularSalidaIntercambio(
@@ -28,15 +24,16 @@ export function calcularSalidaIntercambio(
   cotizacion: number,
 ): number | null {
   if (!from || !to || !(entrada > 0) || !(cotizacion > 0)) return null
-  const exacto = from === USD ? entrada / cotizacion : entrada * cotizacion
+  const exacto = from === USD ? entrada * cotizacion : entrada / cotizacion
   return Math.floor(Number(exacto.toFixed(8)))
 }
 
 const formatNumero = (n: number) => n.toLocaleString('es-AR', { maximumFractionDigits: 4 })
 
-/** "1 EUR = 1,14 USD", siempre con la moneda no-USD a la izquierda. */
+/** "1 USD = 0,85 EUR": USD siempre como moneda base, sin importar el sentido del intercambio. */
 export function formatCotizacionIntercambio(from: string, to: string, cotizacion: number): string {
-  return `1 ${monedaCotizada(from, to)} = ${formatNumero(cotizacion)} ${USD}`
+  const noUsd = from === USD ? to : from
+  return `1 ${USD} = ${formatNumero(cotizacion)} ${noUsd}`
 }
 
 /** "100 EUR → 114 USD" */

@@ -6,6 +6,7 @@ import { calcularSalidaIntercambio, monedasSalidaPermitidas } from '../../../uti
 const initialForm: OperationForm = {
   opType: 'Compra',
   currency: '',
+  medioPago: 'ARS',
   karat: '',
   weight: '',
   quantity: '',

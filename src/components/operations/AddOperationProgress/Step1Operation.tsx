@@ -1,4 +1,4 @@
-import type { OperationForm } from './operation.types'
+import { FIAT_CURRENCIES, MEDIO_PAGO_LABEL, type MedioPago, type OperationForm } from './operation.types'
 import OperationTypeToggle from './OperationTypeToggle'
 import CurrencySelect from './CurrencySelect'
 import MetalFields from './MetalFields'
@@ -103,6 +103,21 @@ export default function Step1Operation({
           <p className="text-xs text-red-500 mt-0.5">{errors.quote}</p>
         )}
       </div>
+      {/* Medio de pago: solo para divisas (no metales). Default: Pesos (caja ARS). */}
+      {!isMetal && (FIAT_CURRENCIES as readonly string[]).includes(form.currency) && (
+        <div>
+          <label className="text-xs text-gray-500 mb-1 block">Medio de pago</label>
+          <select
+            value={form.medioPago}
+            onChange={e => updateField('medioPago', e.target.value as MedioPago)}
+            className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          >
+            {(Object.keys(MEDIO_PAGO_LABEL) as MedioPago[]).map(m => (
+              <option key={m} value={m}>{MEDIO_PAGO_LABEL[m]}</option>
+            ))}
+          </select>
+        </div>
+      )}
       <SectionDivider />
       <PartyToggleGroup
         hasDebtor={form.hasDebtor}

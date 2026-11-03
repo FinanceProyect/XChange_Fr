@@ -117,6 +117,7 @@ export default function AddOperationProgress({ isOpen, onClose, onSave }: AddOpe
       payload.peso = parseFloat(form.weight)
     } else {
       payload.monto = parseFloat(form.quantity)
+      payload.medioPago = form.medioPago
     }
 
     if (form.hasDebtor) {
@@ -133,11 +134,16 @@ export default function AddOperationProgress({ isOpen, onClose, onSave }: AddOpe
       }
     }
 
+    setSaveError(null)
     createOperacion(payload, {
       onSuccess: () => {
         reset()
         onSave()
         onClose()
+      },
+      // Ej.: "Saldo insuficiente en PTRANS". El modal queda abierto con el mensaje.
+      onError: (error) => {
+        setSaveError(backendErrorMessage(error, 'No se pudo registrar la operación'))
       },
     })
   }

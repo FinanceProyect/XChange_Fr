@@ -11,6 +11,8 @@ export interface BackendOperacion {
   tasaCambio: number
   activoSalida?: string | null
   montoSalida?: number | null
+  // Solo compras/ventas de divisas; null en intercambios y metales
+  medioPago?: 'ARS' | 'PTRANS' | null
 }
 
 const tipoMap: Record<BackendOperacion['tipo'], OperationType> = {
@@ -40,6 +42,9 @@ export function operacionToFrontend(op: BackendOperacion): Operation {
     amount:    op.monto,
     buyPrice:  op.tasaCambio,
     sellPrice: op.tasaCambio,
+  }
+  if (op.medioPago) {
+    operation.medioPago = op.medioPago
   }
   if (op.tipo === 'INTERCAMBIO' && op.activoSalida) {
     operation.salidaCurrency = activoIdToCurrency[op.activoSalida] ?? 'USD'

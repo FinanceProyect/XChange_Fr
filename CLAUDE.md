@@ -11,7 +11,7 @@ npm run lint      # Run ESLint
 npm run preview   # Preview production build
 ```
 
-No test suite is configured.
+Tests: Playwright (`npm run test:e2e`). Ver `e2e/README.md` para el entorno (MySQL en Docker + backend en :8080).
 
 ## Architecture
 

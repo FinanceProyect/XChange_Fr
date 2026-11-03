@@ -1,4 +1,4 @@
-import type { OperationForm } from './operation.types'
+import { FIAT_CURRENCIES, MEDIO_PAGO_LABEL, type OperationForm } from './operation.types'
 import { formatCotizacionIntercambio } from '../../../utils/intercambio'
 
 interface Step3SummaryProps {
@@ -48,6 +48,9 @@ export default function Step3Summary({ form, isMetal, isExchange, exchangeOutput
       {isMetal && form.weight && <SummaryRow label="Peso" value={`${form.weight} g`} />}
       <SummaryRow label="Monto" value={form.quantity} />
       <SummaryRow label="Cotización" value={form.quote} />
+      {!isMetal && (FIAT_CURRENCIES as readonly string[]).includes(form.currency) && (
+        <SummaryRow label="Medio de pago" value={MEDIO_PAGO_LABEL[form.medioPago]} />
+      )}
       {form.hasDebtor && <SummaryRow label="Deudor" value={form.debtorName} />}
       {form.hasCreditor && (
         <>

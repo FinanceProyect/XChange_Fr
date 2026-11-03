@@ -7,6 +7,7 @@ import { formatDateValue, formatTimeValue } from '../../utils/date'
 import { formatCotizacionIntercambio, formatMovimientoIntercambio } from '../../utils/intercambio'
 import EditOperationModal from './EditOperationModal'
 import DeleteOperationModal from './DeleteOperationModal'
+import { MEDIO_PAGO_LABEL } from './AddOperationProgress/operation.types'
 
 const currencySymbol: Record<OperationCurrency, string> = {
   EUR:   '€',
@@ -230,6 +231,11 @@ export default function OperationsTable({ currency, type }: OperationsTableProps
                         <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${typeColors[op.type]}`}>
                           {op.type}
                         </span>
+                        {!isMetal && op.medioPago && (
+                          <span className="block text-[11px] text-gray-400 mt-0.5">
+                            {MEDIO_PAGO_LABEL[op.medioPago]}
+                          </span>
+                        )}
                       </td>
                       <td className="py-3 px-3 text-right text-gray-700 font-medium">
                         {isMetal

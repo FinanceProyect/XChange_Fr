@@ -4,9 +4,17 @@ export const METAL_CURRENCIES = ['METAL'] as const
 export const FIAT_CURRENCIES = ['EUR', 'USD', 'BRL', 'USDT'] as const
 export type Currency = typeof METAL_CURRENCIES[number] | typeof FIAT_CURRENCIES[number] | ''
 
+// Medio de pago en pesos para compras y ventas de divisas. Se envía tal cual al backend.
+export type MedioPago = 'ARS' | 'PTRANS'
+export const MEDIO_PAGO_LABEL: Record<MedioPago, string> = {
+  ARS: 'Pesos',
+  PTRANS: 'Pesos transferencia',
+}
+
 export interface OperationForm {
   opType: OperationType
   currency: Currency
+  medioPago: MedioPago
   karat: string
   weight: string
   quantity: string
