@@ -4,7 +4,7 @@ import { isAxiosError } from "axios";
 import { useCreateDeudor } from "../../queries/deudores.query";
 import DatePicker from "../operations/AddOperationProgress/DatePicker";
 
-const CURRENCIES = ["ARS", "PTRANS", "USD", "EUR", "BRL", "USDT", "METAL"];
+const CURRENCIES = ["ARS", "PTRANS", "USD", "EUR", "BRL", "USDT"];
 
 const backendErrorMessage = (error: unknown, fallback: string) => {
   if (isAxiosError(error)) {
